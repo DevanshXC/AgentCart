@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgentCart - AI Commerce</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#0052ff",
+                    "on-background": "#e3e2e2",
+                    "on-primary-container": "#dfe3ff",
+                    "on-primary-fixed": "#001452",
+                    "surface-tint": "#b7c4ff",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed": "#2a1700",
+                    "outline": "#8d90a2",
+                    "secondary": "#4edea3",
+                    "primary": "#b7c4ff",
+                    "inverse-primary": "#004ced",
+                    "background": "#121414",
+                    "surface-bright": "#38393a",
+                    "on-tertiary-container": "#ffdfbe",
+                    "on-surface-variant": "#c3c5d9",
+                    "surface-container-high": "#292a2a",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "on-surface": "#e3e2e2",
+                    "on-tertiary": "#472a00",
+                    "surface-container-lowest": "#0d0e0f",
+                    "outline-variant": "#434656",
+                    "surface-container-low": "#1a1c1c",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-secondary-container": "#00311f",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "tertiary": "#ffb95f",
+                    "surface-dim": "#121414",
+                    "inverse-on-surface": "#2f3131",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-variant": "#343535",
+                    "primary-fixed": "#dde1ff",
+                    "on-error-container": "#ffdad6",
+                    "surface-container": "#1e2020",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface": "#121414",
+                    "error-container": "#93000a",
+                    "on-secondary": "#003824",
+                    "on-error": "#690005",
+                    "inverse-surface": "#e3e2e2",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "secondary-container": "#00a572",
+                    "surface-container-highest": "#343535",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-primary": "#002682",
+                    "tertiary-container": "#905a00",
+                    "on-tertiary-fixed-variant": "#653e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "xl": "40px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-caps": ["Geist"],
+                    "body-md": ["Inter"],
+                    "display": ["Inter"],
+                    "code-sm": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0px", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "code-sm": ["13px", {"lineHeight": "1.5", "letterSpacing": "0px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0a0a0a; color: #e3e2e2; }
+        .glass-panel {
+            background-color: #171717;
+            border: 1px solid #262626;
+        }
+        .popover-shadow {
+            box-shadow: 0px 20px 40px rgba(0,0,0,0.5);
+            background-color: #1c1c1c;
+            border: 1px solid #262626;
+        }
+        .input-focus:focus-within {
+            border-color: #0052ff;
+            box-shadow: 0px 0px 0px 2px rgba(0, 82, 255, 0.2);
+        }
+        .btn-primary {
+            background-color: #0052ff;
+            color: #ffffff;
+            transition: filter 0.2s;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #262626;
+            color: #ffffff;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #1c1c1c;
+        }
+        .btn-ghost {
+            background-color: transparent;
+            color: #a3a3a3;
+            transition: color 0.2s;
+        }
+        .btn-ghost:hover {
+            color: #ffffff;
+        }
+        .card-hover:hover {
+            background-color: #1c1c1c;
+            cursor: pointer;
+        }
+        
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #434656; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md text-on-background selection:bg-primary-container selection:text-white">
+<!-- Top Navigation from Shared Components -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-lg py-md max-w-container-max mx-auto bg-background border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="text-headline-md font-headline-md font-bold text-on-background">AgentCart</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase ml-sm">AI Commerce</span>
+</div>
+<div class="hidden md:flex items-center gap-xs px-md py-sm rounded-full bg-surface-container-low border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">AI Agent Ready</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary-container rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer hover:border-primary transition-colors duration-200">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A minimalist digital portrait of a user avatar, featuring simple geometric shapes in shades of deep charcoal, electric blue, and muted gray, set against a pristine dark background. The lighting is soft and flat, emphasizing the clean, high-fidelity fintech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5UL8LBS7UZBfn8yV52BytKarzX8TDOoaD64GfZ-ZJ9U0nqE8W6XjkcIPaGV3h3jF9pm4CisR-mwK8612y1kdUvLflnSChv1XYBwoKhj2vMdoaiEXJ2u9fTJy9RfypAg5imEby9SYFrYYhsrsPtBm3i9vcOBLL0NzWhvjsEueVusZzZlR2XsuNNlHdg0N9TcDYrdWJSlgWc6RL02emO-ndQrrY_UykSl07J34onYuELGIuk_hCDHne"/>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow pt-24 pb-32 px-md md:px-xl max-w-container-max mx-auto w-full flex flex-col">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center mt-xl mb-xl w-full max-w-3xl mx-auto">
+<h1 class="text-display font-display font-semibold mb-sm">What would you like to buy?</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant mb-xl max-w-2xl">
+                Your AI agent searches, compares, and prepares the best purchase within the limits you set.
+            </p>
+<!-- Conversational Input -->
+<div class="w-full relative mb-md">
+<div class="glass-panel rounded-xl p-xs input-focus flex items-end transition-all duration-300">
+<textarea class="w-full bg-transparent border-none text-body-lg font-body-lg text-on-background focus:ring-0 resize-none p-md pb-xs min-h-[100px]" placeholder="Ask your agent to find something..." style="color: #ffffff;">Find me a laptop for coding and gaming under ₹70,000.</textarea>
+<div class="flex justify-between items-center w-full absolute bottom-sm left-0 px-md">
+<button class="text-on-surface-variant hover:text-white transition-colors p-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">attach_file</span>
+</button>
+<button class="btn-primary rounded-lg p-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Suggestion Chips -->
+<div class="flex flex-wrap justify-center gap-sm mt-sm">
+<button class="glass-panel px-md py-xs rounded-full text-label-caps font-label-caps text-on-surface-variant hover:text-white hover:bg-surface-container-high transition-colors uppercase">
+                    Find a laptop
+                </button>
+<button class="glass-panel px-md py-xs rounded-full text-label-caps font-label-caps text-on-surface-variant hover:text-white hover:bg-surface-container-high transition-colors uppercase">
+                    Build a gaming setup
+                </button>
+<button class="glass-panel px-md py-xs rounded-full text-label-caps font-label-caps text-on-surface-variant hover:text-white hover:bg-surface-container-high transition-colors uppercase">
+                    Compare headphones
+                </button>
+<button class="glass-panel px-md py-xs rounded-full text-label-caps font-label-caps text-on-surface-variant hover:text-white hover:bg-surface-container-high transition-colors uppercase">
+                    Find the best value
+                </button>
+</div>
+</section>
+<!-- Agent Response Workspace (Bento Grid Layout) -->
+<section class="w-full mt-lg grid grid-cols-1 lg:grid-cols-12 gap-lg opacity-100 transition-opacity duration-500" id="agent-workspace">
+<!-- Process & Chat Column -->
+<div class="col-span-1 lg:col-span-4 flex flex-col gap-lg">
+<!-- User Message -->
+<div class="glass-panel rounded-xl p-md flex flex-col items-end">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-xs self-start">You</span>
+<p class="text-body-md font-body-md text-on-background">Find me a laptop for coding and gaming under ₹70,000.</p>
+</div>
+<!-- Agent Status -->
+<div class="glass-panel rounded-xl p-lg flex flex-col">
+<div class="flex items-center gap-sm mb-md border-b border-outline-variant pb-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<h3 class="text-headline-md font-headline-md text-on-background">Agent working</h3>
+</div>
+<ul class="flex flex-col gap-sm text-body-md font-body-md">
+<li class="flex items-center gap-sm text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            Understanding request
+                        </li>
+<li class="flex items-center gap-sm text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            Checking budget
+                        </li>
+<li class="flex items-center gap-sm text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            Searching merchant catalog
+                        </li>
+<li class="flex items-center gap-sm text-primary">
+<span class="material-symbols-outlined text-sm animate-spin" style="font-variation-settings: 'FILL' 0;">progress_activity</span>
+                            Selecting best match
+                        </li>
+</ul>
+<div class="mt-md pt-md border-t border-outline-variant">
+<p class="text-body-md font-body-md text-on-background">I found 3 strong matches based on your criteria.</p>
+</div>
+</div>
+</div>
+<!-- Primary Recommendation Column -->
+<div class="col-span-1 lg:col-span-5 flex flex-col h-full">
+<div class="glass-panel rounded-xl p-0 flex flex-col h-full overflow-hidden relative">
+<!-- High match badge -->
+<div class="absolute top-md right-md z-10 bg-surface-container-lowest border border-outline-variant px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-label-caps font-label-caps text-secondary uppercase">94% Match</span>
+</div>
+<!-- Image Area -->
+<div class="w-full h-48 bg-surface-container-high relative border-b border-outline-variant">
+<img alt="Developer Pro 16 Laptop" class="w-full h-full object-cover" data-alt="A sleek, modern high-performance laptop, viewed at a dynamic angle, sitting on a pristine, reflective dark surface. The laptop features a subtle electric blue glow from its keyboard and vents. The background is a deep, immersive charcoal black environment with minimalist lighting that highlights the precision engineering and premium materials of the device." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIGkySwKIHKJfjkoZDIhqixJzreSC-72-3ib_OPH0r5CVAy_t4XXMd9HTin7jH6NWXV4TmiE3VVGJFG0lyfisOwzl2FuuiXIlo_2iwSRL2re3DxOSFNHSFakn2Sqq7uXDV0rPZ7aYMbsOIOKlpecydWSciJBm_NUId4vXWJ7eOrW3qXOv7GDCLVy_45Mswhub9pzzSmfj3VtLJQnl3i5iK_lS_M7qyvCajZ9OL8_cveqeezUChsBkO"/>
+</div>
+<!-- Content Area -->
+<div class="p-lg flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-sm">
+<h2 class="text-headline-lg font-headline-lg text-white">Developer Pro 16</h2>
+<span class="text-headline-md font-headline-md font-semibold text-white">₹64,999</span>
+</div>
+<p class="text-body-sm font-body-md text-on-surface-variant mb-md">
+                            16GB RAM · 512GB SSD · RTX 4050
+                        </p>
+<!-- Why this matches -->
+<div class="mt-auto bg-surface-container-low rounded-lg p-md border border-outline-variant">
+<h4 class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-sm">Why this matches</h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="flex items-center gap-xs text-body-sm font-body-md">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>Within budget (₹70k)</span>
+</div>
+<div class="flex items-center gap-xs text-body-sm font-body-md">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>16GB RAM for Coding</span>
+</div>
+<div class="flex items-center gap-xs text-body-sm font-body-md">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>RTX 4050 for Gaming</span>
+</div>
+<div class="flex items-center gap-xs text-body-sm font-body-md">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>512GB Fast SSD</span>
+</div>
+<div class="flex items-center gap-xs text-body-sm font-body-md">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>Currently in stock</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex gap-md mt-lg pt-lg border-t border-outline-variant">
+<button class="btn-primary flex-1 py-sm rounded-lg text-body-md font-body-md font-medium text-center">
+                                View recommendation
+                            </button>
+<button class="btn-secondary flex-1 py-sm rounded-lg text-body-md font-body-md font-medium text-center">
+                                Compare 3 options
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Alternative Options Column -->
+<div class="col-span-1 lg:col-span-3 flex flex-col gap-md">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant uppercase ml-xs">Alternative Options</h3>
+<!-- Alt Card 1 -->
+<div class="glass-panel rounded-xl p-md flex flex-col card-hover transition-colors">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-label-caps font-label-caps text-secondary uppercase flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            88% Match
+                        </span>
+<span class="text-body-md font-body-md font-semibold">₹68,500</span>
+</div>
+<h4 class="text-headline-md font-headline-md text-white mb-xs">CodeBook Ultra</h4>
+<p class="text-body-sm font-body-md text-on-surface-variant text-xs">Better CPU, but integrated graphics. Less ideal for gaming.</p>
+</div>
+<!-- Alt Card 2 -->
+<div class="glass-panel rounded-xl p-md flex flex-col card-hover transition-colors">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-label-caps font-label-caps text-primary uppercase flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            82% Match
+                        </span>
+<span class="text-body-md font-body-md font-semibold">₹69,990</span>
+</div>
+<h4 class="text-headline-md font-headline-md text-white mb-xs">Gamer Forge 15</h4>
+<p class="text-body-sm font-body-md text-on-surface-variant text-xs">RTX 4060, but only 8GB RAM. Might struggle with heavy coding.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Trust/Control Strip (Footer area, fixed or sticky) -->
+<footer class="fixed bottom-0 w-full z-40 bg-surface-container-lowest border-t border-outline-variant px-lg py-sm flex flex-col md:flex-row justify-between items-center gap-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" style="font-variation-settings: 'FILL' 0;">shield</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">Your agent operates within your limits</span>
+</div>
+<div class="flex items-center gap-lg text-label-caps font-label-caps text-on-surface-variant uppercase">
+<span class="hidden md:inline">Max purchase ₹70,000</span>
+<span class="hidden md:inline">Approval above ₹25,000</span>
+<span class="hidden md:inline">Max discount 10%</span>
+<a class="btn-ghost hover:text-white transition-colors border-l border-outline-variant pl-lg ml-md" href="#">View policies</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Recommendation - AgentCart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#4edea3",
+                        "surface-container-high": "#292a2a",
+                        "inverse-primary": "#004ced",
+                        "surface-variant": "#343535",
+                        "primary-fixed": "#dde1ff",
+                        "on-surface": "#e3e2e2",
+                        "surface-dim": "#121414",
+                        "surface-container": "#1e2020",
+                        "tertiary": "#ffb95f",
+                        "on-error": "#690005",
+                        "outline-variant": "#434656",
+                        "on-secondary-container": "#00311f",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#905a00",
+                        "surface-container-lowest": "#0d0e0f",
+                        "on-secondary": "#003824",
+                        "on-secondary-fixed": "#002113",
+                        "primary-container": "#0052ff",
+                        "on-surface-variant": "#c3c5d9",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#001452",
+                        "on-primary-container": "#dfe3ff",
+                        "on-primary": "#002682",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-tint": "#b7c4ff",
+                        "on-tertiary-container": "#ffdfbe",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-surface": "#e3e2e2",
+                        "surface-bright": "#38393a",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container-highest": "#343535",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-on-surface": "#2f3131",
+                        "on-background": "#e3e2e2",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline": "#8d90a2",
+                        "primary": "#b7c4ff",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary": "#472a00",
+                        "surface": "#121414",
+                        "secondary-container": "#00a572",
+                        "surface-container-low": "#1a1c1c",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "background": "#121414"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "unit": "8px",
+                        "md": "16px",
+                        "xl": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Geist"],
+                        "code-sm": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "letterSpacing": "0px", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "code-sm": ["13px", { "lineHeight": "1.5", "letterSpacing": "0px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #121414;
+            color: #e3e2e2;
+        }
+        .bento-card {
+            background-color: #171717;
+            border: 1px solid #262626;
+        }
+        .btn-primary {
+            background-color: #0052ff;
+            color: #ffffff;
+            transition: filter 0.2s;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #262626;
+            color: #ffffff;
+        }
+        .btn-ghost {
+            background-color: transparent;
+            color: #a3a3a3;
+            transition: color 0.2s;
+        }
+        .btn-ghost:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopNavBar (From JSON) -->
+<nav class="bg-background dark:bg-background docked full-width top-0 border-b border-outline-variant dark:border-outline-variant flat no shadows fixed top-0 w-full z-50 flex justify-between items-center px-lg py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<!-- Brand Logo -->
+<div class="text-headline-md font-headline-md font-bold text-on-background dark:text-on-background cursor-pointer hover:text-primary transition-colors duration-200">
+                AgentCart
+            </div>
+<!-- Search Bar placeholder if 'on_right' was literal, but let's put a subtle one here or leave space -->
+</div>
+<!-- Center/Tabs - Assuming implicit tabs if needed, but not specified in top nav JSON except active state logic. It's a top nav for AgentCart -->
+<div class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-caps text-label-caps uppercase tracking-widest" href="#">Dashboard</a>
+<a class="text-primary font-bold font-label-caps text-label-caps uppercase tracking-widest opacity-80 transition-opacity" href="#">AI Recommendations</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-caps text-label-caps uppercase tracking-widest" href="#">Budget</a>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary dark:text-primary hover:text-primary transition-colors duration-200 cursor-pointer" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer hover:border-primary transition-colors duration-200">
+<img class="w-full h-full object-cover" data-alt="A sleek, minimalist avatar placeholder for a user profile, featuring subtle geometric patterns in dark greys and deep blues, illuminated by a soft, premium high-tech glow indicative of a modern fintech platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe4EQuSn5-FoOYNZdoa5PYRGExavEbyr_kCLu_VDgszR7MJhTvSQFA8NMPhoOIbjyt97z_USDRYX3OXbfa96tS_78pCFYcMOdIn8wTE17NsU30nEwhG8ENVAjQZGOebatxFM9puLxy1jYAUML-J6PMH1Y0UlQABmE-XoEKOSy9eUTQlHo7TCBvWT90TbY1iFsKQAOD0xwqNOBPJwCaIdHx-dUQ_Dy5usvkP84unqnMwFICSYJRghVG"/>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow pt-24 pb-xl px-md md:px-xl max-w-container-max mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Left Side: Product Image & AI Explanation -->
+<div class="lg:col-span-7 flex flex-col gap-lg">
+<!-- Product Image Hero -->
+<div class="bento-card rounded-xl p-lg flex items-center justify-center relative overflow-hidden group min-h-[400px]">
+<!-- Subtle background glow -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50"></div>
+<img class="relative z-10 w-full max-w-lg object-contain transition-transform duration-500 group-hover:scale-105" data-alt="A highly detailed, professional product shot of a premium, dark-grey modern laptop with a glowing, vibrant screen displaying lines of complex code. The laptop sits on a sleek, matte black surface, illuminated by dramatic, high-contrast studio lighting with subtle blue and violet AI-inspired accents. The overall mood is sophisticated, technical, and high-performance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANxibGnRSuO191yXH9KuvHTQckEIdwvtnCj7Ht0OwXLvs98xwSmSGV4GrudmgeRQUwjXCGv0Dcriqm82G3AtcB93yaGwrnbqOprsg13o8sRThRhUYxI-iYNKxauwm5MkZZEa7etqCSY5oRKuBIuqNzpNR9keVBOYPCVwxA0ImGc6I2rWTozkbrCshem7JrgaMP-XO5qcTK3-vrP4P9z9WccUeptDeX9Efs6gXzBPWHAtzuE4lsE8mO"/>
+<div class="absolute top-md left-md z-20 flex items-center gap-xs bg-surface-container/80 backdrop-blur-md border border-outline-variant rounded-full px-3 py-1">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-label-caps font-label-caps text-on-surface">Agent Verified</span>
+</div>
+</div>
+<!-- AI Explanation Panel -->
+<div class="bento-card rounded-xl p-lg">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="text-headline-md font-headline-md text-on-background">Why your agent chose this</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="check">check</span>
+<span class="text-body-md font-body-md text-on-surface-variant">Within your ₹70,000 budget</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="check">check</span>
+<span class="text-body-md font-body-md text-on-surface-variant">16GB RAM for coding</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="check">check</span>
+<span class="text-body-md font-body-md text-on-surface-variant">RTX 4050 for gaming</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="check">check</span>
+<span class="text-body-md font-body-md text-on-surface-variant">512GB SSD</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="check">check</span>
+<span class="text-body-md font-body-md text-on-surface-variant">Currently in stock</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Details & Actions -->
+<div class="lg:col-span-5 flex flex-col gap-lg">
+<!-- Product Identity & Price -->
+<div class="bento-card rounded-xl p-lg flex flex-col">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-caps font-label-caps text-primary uppercase tracking-widest">AI Recommendation</span>
+<div class="flex items-center gap-xs bg-secondary/10 text-secondary px-2 py-1 rounded border border-secondary/20">
+<span class="text-label-caps font-label-caps font-bold">94% MATCH</span>
+</div>
+</div>
+<h1 class="text-headline-lg font-headline-lg md:font-headline-lg text-on-background mb-sm">Developer Pro 16</h1>
+<div class="text-display font-display text-on-background mb-md">₹64,999</div>
+<p class="text-body-lg font-body-lg text-on-surface-variant mb-lg">
+                    16GB RAM · 512GB SSD · RTX 4050
+                </p>
+<div class="flex items-center gap-md mb-xl">
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-body-md font-body-md text-on-surface">In Stock</span>
+</div>
+<span class="text-outline-variant">|</span>
+<span class="text-body-md font-body-md text-on-surface-variant">Delivery in 2–4 days</span>
+</div>
+<div class="flex flex-col gap-md mt-auto">
+<button class="btn-primary w-full py-3 rounded-lg text-body-md font-body-md font-semibold flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+                        Add to purchase
+                    </button>
+<button class="btn-secondary w-full py-3 rounded-lg text-body-md font-body-md font-semibold flex items-center justify-center gap-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+                        Compare alternatives
+                    </button>
+</div>
+</div>
+<!-- Requirement Matching -->
+<div class="bento-card rounded-xl p-lg">
+<h4 class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest mb-md">Requirement Matching</h4>
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center border-b border-outline-variant/50 pb-sm">
+<span class="text-body-md font-body-md text-on-surface">Coding</span>
+<div class="flex items-center gap-xs text-secondary">
+<span class="text-body-md font-body-md">Strong match</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-b border-outline-variant/50 pb-sm">
+<span class="text-body-md font-body-md text-on-surface">Gaming</span>
+<div class="flex items-center gap-xs text-secondary">
+<span class="text-body-md font-body-md">Strong match</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="sports_esports">sports_esports</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-b border-outline-variant/50 pb-sm">
+<span class="text-body-md font-body-md text-on-surface">Budget</span>
+<span class="text-body-md font-body-md text-primary">₹5,001 remaining</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-md font-body-md text-on-surface">Availability</span>
+<span class="text-body-md font-body-md text-on-surface-variant">In stock</span>
+</div>
+</div>
+</div>
+<!-- AI Suggestions -->
+<div class="bento-card rounded-xl p-lg">
+<h4 class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest mb-md">Complete your setup</h4>
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-high transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="mouse">mouse</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface">Wireless Mouse</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">₹1,499</span>
+</div>
+</div>
+<button class="text-primary hover:text-on-primary-container p-2 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-high transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="keyboard">keyboard</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface">Mechanical Keyboard</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">₹3,499</span>
+</div>
+</div>
+<button class="text-primary hover:text-on-primary-container p-2 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Agent Limits Footer / Bottom Bar -->
+<div class="w-full bg-surface-container-lowest border-t border-outline-variant py-md px-lg relative z-40 mt-auto">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between gap-md">
+<div class="flex flex-col gap-xs flex-grow">
+<div class="flex items-center gap-sm text-primary mb-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="security">security</span>
+<span class="text-label-caps font-label-caps uppercase tracking-widest font-bold">Agent Financial Limits</span>
+</div>
+<div class="flex flex-wrap gap-x-lg gap-y-sm text-body-md font-body-md text-on-surface-variant">
+<div>Maximum purchase: <span class="text-on-surface font-medium">₹70,000</span></div>
+<div>Current product: <span class="text-on-surface font-medium">₹64,999</span></div>
+<div>Remaining budget: <span class="text-secondary font-medium">₹5,001</span></div>
+<div class="hidden lg:block">Approval above: <span class="text-on-surface font-medium">₹25,000</span></div>
+</div>
+<p class="text-code-sm font-code-sm text-outline mt-1">
+                    Your agent can prepare this purchase, but the final financial action remains under your control.
+                </p>
+</div>
+<button class="btn-primary py-2 px-6 rounded-lg text-body-md font-body-md font-semibold whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-sm">
+                Continue to purchase
+                <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>
