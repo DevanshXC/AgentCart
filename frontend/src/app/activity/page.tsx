@@ -1,5 +1,6 @@
 
 import MaterialIcon from "@/components/MaterialIcon";
+import AuditTimeline from "@/components/AuditTimeline";
 import {
   getLatestOrder,
   getAuditEvents,
@@ -7,16 +8,12 @@ import {
   getActivityDetails
 } from "@/lib/api";
 
-
-
-const filterTabs = ["All", "Agent", "Policy", "Order", "Payment"];
-
 export default async function ActivityPage() {
   const order = await getLatestOrder();
   const sessionId = order.session_id;
   const activityEvents = await getAuditEvents(sessionId);
   const activitySummary = await getActivitySummary(sessionId);
-  const { policyCheckDetail, financialSafety, agentPermissions } = await getActivityDetails();
+  const { financialSafety, agentPermissions } = await getActivityDetails();
 
   const summaryCards = [
     { label: "Agent Actions", value: activitySummary.agentActions, icon: "smart_toy" },
@@ -99,166 +96,8 @@ export default async function ActivityPage() {
             )})}
           </div>
 
-          {/* Main Content: Two Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-            {/* Left: Timeline */}
-            <div className="lg:col-span-2 flex flex-col gap-md">
-              {/* Filters */}
-              <div className="flex flex-wrap gap-sm mb-sm">
-                {filterTabs.map((tab, i) => (
-                  <button
-                    key={tab}
-                    className={`px-3 py-1.5 rounded-full text-label-caps transition-all ${
-                      i === 0
-                        ? "bg-primary-container text-on-primary-container"
-                        : "bg-transparent border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-on-surface-variant"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-
-              {/* Timeline Container */}
-              <div className="glass-panel rounded-lg p-lg relative overflow-hidden">
-                <div className="absolute left-[43px] top-lg bottom-lg w-px bg-outline-variant z-0" />
-                <div className="flex flex-col gap-lg relative z-10">
-                  {activityEvents.map((event: import("@/lib/api/types").AuditEvent, i: number) => {
-                    const delay = (i + 1) * 100;
-                    const delayClass = delay <= 500 ? `delay-${delay}` : 'delay-500';
-                    return (
-                    <div key={i} className={`flex gap-md group animate-fade-in-up ${delayClass} ${event.isHighlighted ? "cursor-pointer" : ""}`}>
-                      <div className="w-[60px] flex-shrink-0 text-right pt-1">
-                        <span
-                          className={`text-code-sm group-hover:text-on-surface transition-colors ${
-                            event.isHighlighted
-                              ? "text-primary"
-                              : "text-on-surface-variant"
-                          }`}
-                          style={
-                            event.isHighlighted
-                              ? { textShadow: "0 0 10px rgba(0, 82, 255, 0.5)" }
-                              : undefined
-                          }
-                        >
-                          {event.time}
-                        </span>
-                      </div>
-                      <div
-                        className={`flex-shrink-0 w-6 h-6 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center mt-0.5 z-10 ${
-                          event.isHighlighted
-                            ? "shadow-[0_0_10px_rgba(0,82,255,0.5)]"
-                            : ""
-                        }`}
-                      >
-                        <div
-                          className={`${
-                            event.isHighlighted ? "w-2.5 h-2.5" : "w-2 h-2"
-                          } rounded-full ${event.dotColor} group-hover:bg-on-surface transition-colors`}
-                        />
-                      </div>
-                      {event.isHighlighted ? (
-                        <div className="flex-1 bg-surface-container-high rounded-md p-md -mt-3 -ml-2 hover:border-primary/30 transition-colors">
-                          <div className="flex items-center gap-sm mb-xs">
-                            <span className="text-label-caps text-primary">
-                              {event.type}
-                            </span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                            {event.status && (
-                              <span className="text-label-caps text-secondary ml-auto">
-                                {event.status}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-body-md text-on-surface">
-                            {event.description}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="flex-1 pb-md">
-                          <div className="flex items-center gap-sm mb-xs">
-                            <span className="text-label-caps text-on-surface">
-                              {event.type}
-                            </span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                          </div>
-                          <p className="text-body-md text-on-surface-variant">
-                            {event.description}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )})}
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Detail View */}
-            <div className="lg:col-span-1 animate-fade-in-up delay-300">
-              <div className="glass-panel rounded-lg p-lg sticky top-24">
-                <div className="flex justify-between items-start mb-lg pb-md">
-                  <div>
-                    <span className="text-label-caps text-on-surface-variant mb-xs block">
-                      Event Detail
-                    </span>
-                    <h3 className="text-headline-md text-on-surface">
-                      POLICY CHECK
-                    </h3>
-                  </div>
-                  <div className="px-2 py-1 bg-secondary/10 border border-secondary/30 rounded-sm text-secondary text-label-caps">
-                    PASSED
-                  </div>
-                </div>
-                <div className="space-y-md mb-lg">
-                  <div className="grid grid-cols-2 gap-sm">
-                    <span className="text-body-md text-on-surface-variant">
-                      Order Amount
-                    </span>
-                    <span className="text-code-sm text-on-surface text-right">
-                      {policyCheckDetail.orderAmount}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-sm">
-                    <span className="text-body-md text-on-surface-variant">
-                      Maximum Allowed
-                    </span>
-                    <span className="text-code-sm text-on-surface text-right">
-                      {policyCheckDetail.maximumAllowed}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-sm">
-                    <span className="text-body-md text-on-surface-variant">
-                      Policy Source
-                    </span>
-                    <span className="text-body-md text-on-surface text-right truncate">
-                      {policyCheckDetail.policySource}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-sm pt-sm">
-                    <span className="text-body-md text-on-surface-variant">
-                      Decision
-                    </span>
-                    <span className="text-label-caps text-on-surface text-right">
-                      {policyCheckDetail.decision}
-                    </span>
-                  </div>
-                </div>
-                <div className="mb-lg">
-                  <span className="text-label-caps text-on-surface-variant mb-sm block">
-                    Event Payload
-                  </span>
-                  <div className="code-block rounded-md p-md text-xs overflow-x-auto">
-                    <pre>
-                      <code>{policyCheckDetail.payload}</code>
-                    </pre>
-                  </div>
-                </div>
-                <button className="w-full bg-transparent text-on-surface-variant rounded-lg py-2 text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200 active:scale-95">
-                  View structured event
-                </button>
-              </div>
-            </div>
-          </div>
+          {/* Main Content: Timeline + Detail */}
+          <AuditTimeline events={activityEvents} />
 
           {/* Bottom Panels */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-lg mt-lg pt-lg mb-lg">

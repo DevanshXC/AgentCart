@@ -28,6 +28,8 @@ export default function Sidebar() {
     return pathname.startsWith(route);
   };
 
+  const isSettingsActive = pathname.startsWith("/settings");
+
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container-low flex flex-col z-50">
       <div className="px-lg py-md h-16 flex items-center gap-sm">
@@ -59,8 +61,12 @@ export default function Sidebar() {
 
       <div className="mt-auto px-sm pb-lg flex flex-col gap-sm">
         <Link
-          href="#"
-          className="flex items-center gap-md px-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/50 transition-colors duration-200"
+          href="/settings"
+          className={`flex items-center gap-md px-md py-2.5 rounded-lg transition-colors duration-200 ${
+            isSettingsActive
+              ? "text-primary bg-primary-container/10"
+              : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/50"
+          }`}
         >
           <MaterialIcon icon="settings" size={20} />
           <span className="text-body-md">Settings</span>

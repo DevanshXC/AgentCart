@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
  * used by the Activity timeline UI.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapBackendAuditEvent(event: any): AuditEvent {
+export function mapBackendAuditEvent(event: any): AuditEvent {
   const ts = new Date(event.timestamp);
   const time = ts.toLocaleTimeString("en-IN", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
@@ -69,6 +69,10 @@ function mapBackendAuditEvent(event: any): AuditEvent {
     dotColor = "bg-primary";
     isHighlighted = true;
     status = "AUTHORIZED";
+  } else if (event.event_type === "RECOVERY_COMPLETED") {
+    dotColor = "bg-tertiary";
+    isHighlighted = true;
+    status = "RECOVERED";
   } else if (event.result === "FAILURE") {
     dotColor = "bg-error";
   }
@@ -80,6 +84,18 @@ function mapBackendAuditEvent(event: any): AuditEvent {
     dotColor,
     status,
     isHighlighted,
+    id: event.id,
+    timestamp: event.timestamp,
+    session_id: event.session_id,
+    order_id: event.order_id,
+    actor: event.actor,
+    event_type: event.event_type,
+    action: event.action,
+    input_data: event.input_data,
+    output_data: event.output_data,
+    policy_result: event.policy_result,
+    result: event.result,
+    provider_event_id: event.provider_event_id,
   };
 }
 
@@ -150,4 +166,28 @@ export async function getActivitySummary(sessionId?: string): Promise<ActivitySu
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getActivityEvent(_id: string): Promise<AuditEvent> {
   return mockActivityEvents[0];
+}
+
+/**
+ * Fetches the most recent real audit events for the TopNav notifications
+ * popover. Unlike getAuditEvents(), this never falls back to mock data —
+ * an empty result means the popover should render its empty state.
+ */
+export async function getRecentNotifications(limit: number = 5): Promise<AuditEvent[]> {
+  try {
+    const orderRes = await fetch(`${API_BASE_URL}/api/orders/latest`, { cache: "no-store" });
+    if (!orderRes.ok) return [];
+    const order = await orderRes.json();
+    if (!order.session_id) return [];
+
+    const auditRes = await fetch(`${API_BASE_URL}/api/audit/${order.session_id}`, { cache: "no-store" });
+    if (!auditRes.ok) return [];
+    const events = await auditRes.json();
+    if (!Array.isArray(events) || events.length === 0) return [];
+
+    // Backend returns newest-first already, which is what a notification feed wants.
+    return events.slice(0, limit).map(mapBackendAuditEvent);
+  } catch {
+    return [];
+  }
 }

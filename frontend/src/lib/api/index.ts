@@ -5,6 +5,7 @@ export * from "./payments";
 export * from "./policies";
 export * from "./activity";
 export * from "./agent";
+export * from "./merchant";
 
 export async function getUserAvatar(): Promise<string> {
   const { userAvatar } = await import("@/lib/mock-data");

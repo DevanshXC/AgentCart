@@ -12,7 +12,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 md:ml-0 relative">
         <TopNav />
-        <div className="flex-1 mt-16 flex flex-col relative w-full pb-16">
+        <div className="flex-1 mt-16 flex flex-col relative w-full pb-24 md:pb-16">
           {children}
         </div>
       </div>

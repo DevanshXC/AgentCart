@@ -109,7 +109,11 @@ export default function CompareAlternatives({
                     {products.map((p) => (
                       <td key={p.id} className="p-md pt-lg">
                         <Link
-                          href={`/products/${p.id}`}
+                          href={
+                            p.matchPercent > 0
+                              ? `/products/${p.id}?match=${p.matchPercent}`
+                              : `/products/${p.id}`
+                          }
                           onClick={handleClose}
                           className="btn-primary w-full block text-center py-2 rounded-md text-label-caps"
                         >

@@ -81,12 +81,29 @@ export interface SafetyCheck {
 }
 
 export interface AuditEvent {
+  // Display fields, derived for the timeline UI
   time: string;
   type: string;
   description: string;
   dotColor: string;
   status: string | null;
   isHighlighted?: boolean;
+  // Raw backend fields (AuditEventResponse), preserved for the detail panel.
+  // Optional because mock/fallback events don't carry them.
+  id?: string;
+  timestamp?: string;
+  session_id?: string;
+  order_id?: string | null;
+  actor?: string;
+  event_type?: string;
+  action?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  input_data?: Record<string, any> | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  output_data?: Record<string, any> | null;
+  policy_result?: string | null;
+  result?: string;
+  provider_event_id?: string | null;
 }
 
 export interface AgentEvent {

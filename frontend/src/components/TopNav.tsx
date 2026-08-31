@@ -1,9 +1,11 @@
 import Link from "next/link";
-import MaterialIcon from "./MaterialIcon";
-import { getUserAvatar } from "@/lib/api";
+import SearchBox from "./SearchBox";
+import NotificationsPopover from "./NotificationsPopover";
+import { getUserAvatar, getRecentNotifications } from "@/lib/api";
 
 export default async function TopNav() {
   const userAvatar = await getUserAvatar();
+  const notifications = await getRecentNotifications();
 
   return (
     <nav className="fixed top-0 right-0 left-0 md:left-64 z-40 flex justify-between items-center px-lg py-md bg-background/80 backdrop-blur-md h-16">
@@ -21,13 +23,8 @@ export default async function TopNav() {
       </div>
 
       <div className="flex items-center gap-md">
-        <button className="text-on-surface-variant hover:text-primary transition-colors duration-200">
-          <MaterialIcon icon="search" />
-        </button>
-        <button className="text-on-surface-variant hover:text-primary transition-colors duration-200 relative">
-          <MaterialIcon icon="notifications" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-primary-container rounded-full" />
-        </button>
+        <SearchBox />
+        <NotificationsPopover items={notifications} />
         <div className="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all duration-200">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

@@ -14,7 +14,7 @@ export default async function AuthorizePage() {
   return (
     <>
 
-      <main className="flex-grow max-w-4xl mx-auto w-full px-md md:px-xl py-xl pt-24 flex flex-col gap-xl">
+      <main className="flex-grow max-w-4xl mx-auto w-full px-md md:px-xl pt-lg pb-xl flex flex-col gap-lg">
         {/* Breadcrumb & Header */}
         <div className="flex flex-col gap-sm">
           <Breadcrumb
@@ -24,18 +24,18 @@ export default async function AuthorizePage() {
               { label: "Authorization" },
             ]}
           />
-          <div className="mt-md">
-            <h1 className="text-display md:text-display text-headline-lg-mobile text-on-background">
+          <div className="mt-sm">
+            <h1 className="text-headline-lg text-on-background">
               Ready to purchase?
             </h1>
-            <p className="text-body-lg text-on-surface-variant mt-sm max-w-2xl">
+            <p className="text-body-lg text-on-surface-variant mt-xs max-w-2xl">
               Your agent prepared this purchase. Review the transaction and
               authorize the financial action.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-lg items-start">
           {/* Left: Order Details & Checks */}
           <div className="md:col-span-7 flex flex-col gap-lg">
             {/* Order Summary */}
@@ -156,7 +156,7 @@ export default async function AuthorizePage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-background/80 backdrop-blur-md py-lg mt-xl">
+      <footer className="w-full bg-background/80 backdrop-blur-md py-lg mt-lg">
         <div className="max-w-[1280px] mx-auto px-lg text-center">
           <p className="text-code-sm text-outline flex items-center justify-center gap-xs">
             <MaterialIcon icon="lock" size={16} />

@@ -3,7 +3,7 @@ import { policy } from "@/lib/mock-data";
 
 export default function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 md:left-64 right-0 z-40 bg-background/80 backdrop-blur-md px-lg py-sm flex flex-col md:flex-row justify-between items-center gap-sm">
+    <footer className="fixed bottom-0 left-0 md:left-64 right-0 z-40 bg-background/80 backdrop-blur-md px-lg py-sm flex flex-col md:flex-row justify-between items-center gap-sm pointer-events-none">
       <div className="flex items-center gap-sm">
         <MaterialIcon icon="shield" className="text-on-surface-variant/50 text-sm" />
         <span className="text-label-caps text-on-surface-variant/60">
@@ -16,7 +16,7 @@ export default function Footer() {
         <span className="hidden md:inline">Max discount {policy.maxDiscountPercent}%</span>
         <a
           href="#"
-          className="btn-ghost hover:text-white transition-colors"
+          className="btn-ghost hover:text-white transition-colors pointer-events-auto"
         >
           View policies
         </a>

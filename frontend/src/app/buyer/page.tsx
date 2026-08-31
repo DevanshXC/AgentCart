@@ -14,7 +14,11 @@ export default function BuyerPage() {
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<AgentChatResponse | null>(null);
   const [sessionId] = useState<string | null>(null);
-  const [buyerData, setBuyerData] = useState<{ matchReasons: string[], suggestions: string[], alternatives: any[] }>({ matchReasons: [], suggestions: [], alternatives: [] });
+  const [buyerData, setBuyerData] = useState<{
+    matchReasons: string[];
+    suggestions: string[];
+    alternatives: { matchColor?: string; dotColor?: string; matchPercent?: number; price?: string; name?: string; description?: string }[];
+  }>({ matchReasons: [], suggestions: [], alternatives: [] });
 
   const [loadingSteps, setLoadingSteps] = useState([
     { label: "Understanding request", done: false },
@@ -154,7 +158,9 @@ export default function BuyerPage() {
           <section className="w-full mt-lg grid grid-cols-1 lg:grid-cols-12 gap-lg mx-auto items-start">
             {/* Process & Chat Column */}
             <div className="col-span-1 lg:col-span-3 flex flex-col gap-md">
-              <div className="h-[24px] hidden lg:block"></div>
+              <h3 className="text-label-caps text-on-surface-variant h-[24px] flex items-end">
+                Conversation
+              </h3>
               {/* User Message */}
               <div className="glass-panel rounded-xl p-md flex flex-col">
                 <span className="text-label-caps text-on-surface-variant mb-xs self-start">
@@ -222,7 +228,9 @@ export default function BuyerPage() {
             {/* Primary Recommendation Column */}
             {!error && recommendedProduct && (
               <div className="col-span-1 lg:col-span-5 flex flex-col gap-md">
-                <div className="h-[24px] hidden lg:block"></div>
+                <h3 className="text-label-caps text-on-surface-variant h-[24px] flex items-end">
+                  Recommendation
+                </h3>
                 <div className="glass-panel rounded-xl p-0 flex flex-col overflow-hidden relative animate-fade-in-up delay-200">
                   {/* Match Badge */}
                   <div className="absolute top-md right-md z-10 bg-surface-container-lowest border border-outline-variant px-sm py-xs rounded-full flex items-center gap-xs animate-fade-in delay-500">
@@ -294,7 +302,11 @@ export default function BuyerPage() {
                     {/* Actions */}
                     <div className="flex gap-md mt-lg">
                       <Link
-                        href={`/products/${recommendedProduct.id}`}
+                        href={
+                          recommendedProduct.matchPercent > 0
+                            ? `/products/${recommendedProduct.id}?match=${recommendedProduct.matchPercent}`
+                            : `/products/${recommendedProduct.id}`
+                        }
                         className="btn-primary flex-1 py-sm rounded-lg text-body-md font-medium text-center"
                       >
                         View recommendation
@@ -312,7 +324,9 @@ export default function BuyerPage() {
             {/* Show skeleton loader for recommendation if loading */}
             {isLoading && !response && !error && (
                <div className="col-span-1 lg:col-span-5 flex flex-col gap-md">
-                 <div className="h-[24px] hidden lg:block"></div>
+                 <h3 className="text-label-caps text-on-surface-variant h-[24px] flex items-end">
+                   Recommendation
+                 </h3>
                  <div className="glass-panel rounded-xl p-0 flex flex-col overflow-hidden animate-pulse">
                     <div className="w-full h-48 bg-surface-container-highest"></div>
                     <div className="p-lg flex flex-col flex-grow">

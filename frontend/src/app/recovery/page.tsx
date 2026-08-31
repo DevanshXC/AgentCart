@@ -3,10 +3,58 @@ import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import StatusBadge from "@/components/StatusBadge";
 import MaterialIcon from "@/components/MaterialIcon";
-import { getRecoveryData } from "@/lib/api";
+import { getRecoveryData, getLatestOrder, getAuditEvents } from "@/lib/api";
+
+function formatEventTimestamp(timestamp?: string, fallback?: string): string {
+  if (timestamp) {
+    const d = new Date(timestamp);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+    }
+  }
+  return fallback ?? "—";
+}
 
 export default async function RecoveryPage() {
   const { recoveryTimeline, recoverySummary, recoveryExplanations } = await getRecoveryData();
+
+  // Real backend data takes precedence: if this session has a genuine
+  // RECOVERY_COMPLETED audit event, surface its real fields. Otherwise keep
+  // the illustrative fallback above unchanged.
+  const order = await getLatestOrder();
+  const events = order.session_id ? await getAuditEvents(order.session_id) : [];
+  const recoveryEvent = events.find((e) => e.event_type === "RECOVERY_COMPLETED");
+
+  const summaryItems = recoveryEvent
+    ? [
+        { label: "Order", value: order.id, mono: true },
+        {
+          label: "Previous state",
+          value: String(recoveryEvent.output_data?.previous_state ?? "UNKNOWN"),
+        },
+        {
+          label: "New state",
+          value: String(recoveryEvent.output_data?.new_state ?? "UNKNOWN"),
+          valueColor: "text-secondary",
+        },
+        {
+          label: "Reconciled at",
+          value: formatEventTimestamp(recoveryEvent.timestamp, recoveryEvent.time),
+          mono: true,
+        },
+        {
+          label: "Gateway status",
+          value: String(recoveryEvent.input_data?.rzp_status ?? "—"),
+        },
+      ]
+    : recoverySummary;
 
   return (
     <>
@@ -117,11 +165,11 @@ export default async function RecoveryPage() {
                 RECOVERY SUMMARY
               </h3>
               <div className="flex flex-col gap-md">
-                {Array.isArray(recoverySummary) && recoverySummary.map((item: { label: string; value: string; valueColor?: string; mono?: boolean }, i: number) => (
+                {Array.isArray(summaryItems) && summaryItems.map((item: { label: string; value: string; valueColor?: string; mono?: boolean }, i: number) => (
                   <div
                     key={i}
                     className={`flex justify-between items-center ${
-                      i < recoverySummary.length - 1
+                      i < summaryItems.length - 1
                         ? "border-b border-border-base pb-sm"
                         : ""
                     }`}

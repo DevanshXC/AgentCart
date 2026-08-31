@@ -2,10 +2,30 @@ import Link from "next/link";
 
 import MaterialIcon from "@/components/MaterialIcon";
 import CompareAlternatives from "@/components/CompareAlternatives";
+import AccessoriesPanel from "@/components/AccessoriesPanel";
+import ProductImage from "@/components/ProductImage";
 import { getProduct, getProducts, getAccessories, getCommercePolicy, getProductPageData } from "@/lib/api";
 
-export default async function ProductPage() {
-  const product = await getProduct("lenovo-loq-15");
+function parseMatchPercent(raw: string | string[] | undefined): number | undefined {
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  if (value === undefined) return undefined;
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || parsed < 0 || parsed > 100) return undefined;
+  return parsed;
+}
+
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { id } = await params;
+  const { match } = await searchParams;
+  const matchPercent = parseMatchPercent(match);
+
+  const product = await getProduct(id);
   const allProducts = await getProducts();
   const accessories = await getAccessories();
   const policy = await getCommercePolicy();
@@ -14,18 +34,16 @@ export default async function ProductPage() {
   return (
     <>
 
-      <main className="flex-grow pt-24 pb-xl px-md md:px-xl max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-lg">
+      <main className="flex-grow pt-lg pb-xl px-md md:px-xl max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-lg lg:items-start">
         {/* Left: Product Image & AI Explanation */}
         <div className="lg:col-span-7 flex flex-col gap-lg">
           {/* Product Image Hero */}
-          <div className="glass-panel rounded-xl p-lg flex items-center justify-center relative overflow-hidden group min-h-[400px]">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={product.image}
-              alt={product.name}
-              className="relative z-10 w-full max-w-lg object-contain transition-transform duration-500 group-hover:scale-105"
-            />
+          <ProductImage
+            src={product.image}
+            alt={product.name}
+            className="glass-panel rounded-xl group min-h-[320px]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50 pointer-events-none" />
             <div className="absolute top-md left-md z-20 flex items-center gap-xs bg-surface-container/80 backdrop-blur-md border border-outline-variant rounded-full px-3 py-1">
               <MaterialIcon
                 icon="check_circle"
@@ -37,7 +55,7 @@ export default async function ProductPage() {
                 Agent Verified
               </span>
             </div>
-          </div>
+          </ProductImage>
 
           {/* AI Explanation Panel */}
           <div className="glass-panel rounded-xl p-lg">
@@ -68,11 +86,13 @@ export default async function ProductPage() {
               <span className="text-label-caps text-primary tracking-widest">
                 AI Recommendation
               </span>
-              <div className="flex items-center gap-xs bg-secondary/10 text-secondary px-2 py-1 rounded-sm border border-secondary/20">
-                <span className="text-label-caps font-bold">
-                  {product.matchPercent}% MATCH
-                </span>
-              </div>
+              {matchPercent !== undefined && (
+                <div className="flex items-center gap-xs bg-secondary/10 text-secondary px-2 py-1 rounded-sm border border-secondary/20">
+                  <span className="text-label-caps font-bold">
+                    {matchPercent}% MATCH
+                  </span>
+                </div>
+              )}
             </div>
             <h1 className="text-headline-lg text-on-background mb-sm">
               {product.name}
@@ -115,14 +135,10 @@ export default async function ProductPage() {
               Requirement Matching
             </h4>
             <div className="flex flex-col gap-md">
-              {requirementMatching.map((req: { label: string; value: string; valueColor: string; icon?: string }, i: number) => (
+              {requirementMatching.map((req: { label: string; value: string; valueColor: string; icon?: string }) => (
                 <div
                   key={req.label}
-                  className={`flex justify-between items-center ${
-                    i < requirementMatching.length - 1
-                      ? "border-b border-outline-variant/50 pb-sm"
-                      : ""
-                  }`}
+                  className="flex justify-between items-center"
                 >
                   <span className="text-body-md text-on-surface">
                     {req.label}
@@ -143,40 +159,13 @@ export default async function ProductPage() {
             <h4 className="text-label-caps text-on-surface-variant tracking-widest mb-md">
               Complete your setup
             </h4>
-            <div className="flex flex-col gap-sm">
-              {accessories.map((acc) => (
-                <div
-                  key={acc.name}
-                  className="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-high transition-colors group"
-                >
-                  <div className="flex items-center gap-md">
-                    <div className="w-10 h-10 rounded-sm bg-surface-container flex items-center justify-center border border-outline-variant">
-                      <MaterialIcon
-                        icon={acc.icon}
-                        className="text-on-surface-variant"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-body-md text-on-surface">
-                        {acc.name}
-                      </span>
-                      <span className="text-label-caps text-on-surface-variant">
-                        {acc.priceFormatted}
-                      </span>
-                    </div>
-                  </div>
-                  <button className="text-primary hover:text-on-primary-container p-2 rounded-full hover:bg-primary/10 transition-colors">
-                    <MaterialIcon icon="add" />
-                  </button>
-                </div>
-              ))}
-            </div>
+            <AccessoriesPanel accessories={accessories} />
           </div>
         </div>
       </main>
 
       {/* Agent Limits Footer */}
-      <div className="w-full bg-surface-container-lowest border-t border-outline-variant py-md px-lg relative z-40 mt-auto">
+      <div className="w-full bg-surface-container-lowest py-md px-lg relative z-40 mt-auto">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-center justify-between gap-md">
           <div className="flex flex-col gap-xs flex-grow">
             <div className="flex items-center gap-sm text-primary mb-1">
