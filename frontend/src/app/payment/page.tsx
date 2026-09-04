@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import MaterialIcon from "@/components/MaterialIcon";
+import MoneyValue from "@/components/MoneyValue";
 import { getProduct, getAccessories, createOrder, getPaymentTimeline } from "@/lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -102,8 +103,9 @@ export default function PaymentPage() {
         <div className="flex flex-col gap-sm text-center items-center">
           <MaterialIcon
             icon={isComplete ? "check_circle" : "sync"}
+            fill={isComplete}
             className={`text-4xl text-secondary mb-sm ${
-              !isComplete ? "animate-spin-slow" : ""
+              isComplete ? "animate-pop-in" : "animate-spin-slow"
             }`}
           />
           <h1 className="text-headline-lg">
@@ -180,15 +182,15 @@ export default function PaymentPage() {
                 </div>
                 <div className="flex justify-between items-center py-sm">
                   <span className="text-on-surface">{product.name}</span>
-                  <span className="text-on-surface">
+                  <MoneyValue size="sm" className="text-on-surface">
                     {product.priceFormatted}
-                  </span>
+                  </MoneyValue>
                 </div>
                 <div className="flex justify-between items-center py-sm">
                   <span className="text-on-surface">{accessory.name}</span>
-                  <span className="text-on-surface">
+                  <MoneyValue size="sm" className="text-on-surface">
                     {accessory.priceFormatted}
-                  </span>
+                  </MoneyValue>
                 </div>
                 <div className="flex justify-between items-center py-sm text-secondary">
                   <span>Discount</span>
@@ -196,13 +198,13 @@ export default function PaymentPage() {
                 </div>
               </div>
             </div>
-            <div className="mt-md pt-md flex justify-between items-center">
+            <div className="mt-md pt-md flex justify-between items-center border-t border-border-base">
               <span className="text-body-md text-on-surface-variant">
                 Final Total
               </span>
-              <span className="text-headline-md text-on-surface">
+              <MoneyValue size="md" className="text-on-surface">
                 {pricing.finalTotalFormatted}
-              </span>
+              </MoneyValue>
             </div>
           </div>
         </div>

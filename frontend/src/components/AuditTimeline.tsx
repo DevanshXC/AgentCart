@@ -1,17 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import MaterialIcon from "./MaterialIcon";
-import { AuditEvent } from "@/lib/api";
+import { Fragment, useMemo, useState } from "react";
+import { AuditEvent, ActivitySummary } from "@/lib/api";
 
 type FilterKey = "all" | "agent" | "policy" | "order" | "payment";
 
 const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "agent", label: "Agent" },
-  { key: "policy", label: "Policy" },
-  { key: "order", label: "Order" },
-  { key: "payment", label: "Payment" },
+  { key: "all", label: "ALL" },
+  { key: "agent", label: "AGENT" },
+  { key: "policy", label: "POLICY" },
+  { key: "order", label: "ORDER" },
+  { key: "payment", label: "PAYMENT" },
 ];
 
 const PAYMENT_EVENT_TYPES = new Set(["PAYMENT_VERIFY", "WEBHOOK_RECEIVED", "RECOVERY_COMPLETED"]);
@@ -53,15 +52,33 @@ function formatTimestamp(event: AuditEvent): string {
   return event.time;
 }
 
-function DetailRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div className="grid grid-cols-2 gap-sm">
-      <span className="text-body-md text-on-surface-variant">{label}</span>
-      <span className={`text-right text-on-surface ${mono ? "text-code-sm" : "text-body-md"}`}>
-        {value}
-      </span>
-    </div>
-  );
+/** Electric mint for pass/authorize states, sharp red for failure states, muted gray otherwise. */
+function statusColor(status: string | null | undefined): string {
+  if (!status) return "text-on-surface-variant/50";
+  const s = status.toUpperCase();
+  if (s.includes("FAIL") || s.includes("ERROR") || s.includes("DECLINE")) return "text-red-500";
+  if (
+    s.includes("PASS") ||
+    s.includes("AUTHORIZ") ||
+    s.includes("SUCCESS") ||
+    s.includes("COMPLET") ||
+    s.includes("VERIFIED") ||
+    s.includes("SECURE")
+  ) {
+    return "text-secondary";
+  }
+  return "text-on-surface-variant";
+}
+
+/** Same keyword logic as statusColor, but for ordinary data values — falls back
+ * to stark white instead of a dimmed gray, since these are real populated data. */
+function valueColor(value: string): string {
+  const s = value.toUpperCase();
+  if (s.includes("FAIL") || s.includes("ERROR") || s.includes("DECLINE")) return "text-red-500";
+  if (s.includes("PASS") || s.includes("AUTHORIZ") || s.includes("SUCCESS") || s.includes("COMPLET")) {
+    return "text-secondary";
+  }
+  return "text-white";
 }
 
 function EventDetailPanel({ event }: { event: AuditEvent }) {
@@ -81,57 +98,74 @@ function EventDetailPanel({ event }: { event: AuditEvent }) {
     output_data: event.output_data ?? null,
   };
 
+  const rows: [string, string][] = [
+    ["ACTION", event.action || "—"],
+    ["ACTOR", event.actor || "—"],
+    ["RESULT", event.result || "—"],
+    ["TIMESTAMP", formatTimestamp(event)],
+    ...(event.order_id ? ([["ORDER", event.order_id]] as [string, string][]) : []),
+    ...(event.session_id ? ([["SESSION", event.session_id]] as [string, string][]) : []),
+    ...(event.policy_result ? ([["POLICY_RESULT", event.policy_result]] as [string, string][]) : []),
+  ];
+
   return (
-    <div className="glass-panel rounded-lg p-lg sticky top-24">
-      <div className="flex justify-between items-start mb-lg gap-sm">
+    <div className="flex flex-col md:h-full md:min-h-0 font-mono">
+      {/* Header — fixed */}
+      <div className="shrink-0 flex items-start justify-between gap-md pb-md border-b border-white/10">
         <div className="min-w-0">
-          <span className="text-label-caps text-on-surface-variant mb-xs block">
-            Event Detail
-          </span>
-          <h3 className="text-headline-md text-on-surface truncate" title={event.type}>
+          <span className="text-xs text-on-surface-variant/40 block mb-xs">EVENT_DETAIL</span>
+          <h3 className="text-lg text-white truncate" title={event.type}>
             {event.type}
           </h3>
         </div>
         {event.status && (
-          <div className="px-2 py-1 bg-secondary/10 border border-secondary/30 rounded-sm text-secondary text-label-caps whitespace-nowrap">
-            {event.status}
-          </div>
+          <span className={`text-sm shrink-0 ${statusColor(event.status)}`}>[ {event.status} ]</span>
         )}
       </div>
 
-      <div className="flex flex-col gap-sm mb-lg">
-        <DetailRow label="Action" value={event.action || "—"} />
-        <DetailRow label="Actor" value={event.actor || "—"} />
-        <DetailRow label="Result" value={event.result || "—"} />
-        <DetailRow label="Timestamp" value={formatTimestamp(event)} />
-        {event.order_id && <DetailRow label="Order" value={event.order_id} mono />}
-        {event.session_id && <DetailRow label="Session" value={event.session_id} mono />}
-        {event.policy_result && <DetailRow label="Policy result" value={event.policy_result} />}
-      </div>
+      {/* Scrollable payload area */}
+      <div className="flex-1 md:min-h-0 md:overflow-y-auto scrollbar-hide pt-md flex flex-col gap-md">
+        <div className="bg-black border border-white/10 p-md">
+          <div className="grid grid-cols-[auto_1fr] gap-x-lg gap-y-xs text-sm">
+            {rows.map(([label, value]) => (
+              <Fragment key={label}>
+                <span className="text-on-surface-variant/50">{label}</span>
+                <span className={`text-right tabular-nums truncate ${valueColor(value)}`} title={value}>
+                  {value}
+                </span>
+              </Fragment>
+            ))}
+          </div>
+        </div>
 
-      <p className="text-body-md text-on-surface-variant mb-lg">{event.description}</p>
+        <p className="text-sm text-on-surface-variant">{event.description}</p>
 
-      <button
-        type="button"
-        onClick={() => setShowRaw((v) => !v)}
-        className="w-full flex items-center justify-between bg-transparent text-on-surface-variant rounded-lg py-2 text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200"
-      >
-        <span>Technical details</span>
-        <MaterialIcon icon={showRaw ? "expand_less" : "expand_more"} size={20} />
-      </button>
+        <button
+          type="button"
+          onClick={() => setShowRaw((v) => !v)}
+          className="text-xs text-on-surface-variant/50 hover:text-white text-left w-fit"
+        >
+          {showRaw ? "[-] HIDE_RAW_PAYLOAD" : "[+] SHOW_RAW_PAYLOAD"}
+        </button>
 
-      {showRaw && (
-        <div className="code-block rounded-md p-md text-xs overflow-x-auto mt-sm">
-          <pre>
+        {showRaw && (
+          <pre className="bg-black border border-white/10 p-md text-xs overflow-x-auto text-on-surface-variant">
             <code>{JSON.stringify(rawPayload, null, 2)}</code>
           </pre>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
 
-export default function AuditTimeline({ events }: { events: AuditEvent[] }) {
+interface AuditTimelineProps {
+  events: AuditEvent[];
+  summary: ActivitySummary;
+  sessionId?: string;
+  orderStatus: string;
+}
+
+export default function AuditTimeline({ events, summary, sessionId, orderStatus }: AuditTimelineProps) {
   const [filter, setFilter] = useState<FilterKey>("all");
 
   const filteredEvents = useMemo(
@@ -163,125 +197,86 @@ export default function AuditTimeline({ events }: { events: AuditEvent[] }) {
     );
   };
 
+  const orderStatusLabel = orderStatus === "PAID" ? "COMPLETED" : orderStatus;
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-      {/* Left: Timeline */}
-      <div className="lg:col-span-2 flex flex-col gap-md">
-        {/* Filters */}
-        <div className="flex flex-wrap gap-sm mb-sm">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => handleFilterChange(f.key)}
-              className={`px-3 py-1.5 rounded-full text-label-caps transition-all ${
-                filter === f.key
-                  ? "bg-primary-container text-on-primary-container"
-                  : "bg-transparent border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-on-surface-variant"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+    <div className="flex-1 min-h-0 flex flex-col md:flex-row md:h-full py-md md:py-lg">
+      {/* Left: Event Timeline — 40% */}
+      <div className="flex flex-col md:h-full md:min-h-0 md:w-2/5 md:border-r md:border-white/10 md:pr-lg font-mono">
+        {/* Header: session/status, stats, filters — never scrolls */}
+        <div className="shrink-0 bg-[var(--color-background)] pb-sm">
+          <div className="flex items-center justify-between text-xs pb-sm">
+            <span className="text-on-surface-variant/50 truncate" title={sessionId}>
+              SESSION {sessionId ?? "—"}
+            </span>
+            <span className={`shrink-0 ${statusColor(orderStatusLabel)}`}>[ {orderStatusLabel} ]</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-lg text-xs py-sm border-y border-white/10">
+            <span className="text-on-surface-variant/50">
+              EVENTS <span className="text-white tabular-nums">{summary.agentActions}</span>
+            </span>
+            <span className="text-on-surface-variant/50">
+              POLICY <span className="text-white tabular-nums">{summary.policyChecks}</span>
+            </span>
+            <span className="text-on-surface-variant/50">
+              FINANCIAL <span className="text-white tabular-nums">{summary.financialActions}</span>
+            </span>
+            <span className="text-on-surface-variant/50">
+              RECOVERIES <span className="text-white tabular-nums">{summary.recoveries}</span>
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-xs pt-sm">
+            {FILTERS.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => handleFilterChange(f.key)}
+                className={`px-sm py-xs text-xs ${
+                  filter === f.key
+                    ? "bg-white/10 text-white"
+                    : "text-on-surface-variant/50 hover:text-white hover:bg-white/[0.04]"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Timeline Container */}
-        <div className="glass-panel rounded-lg p-lg relative overflow-hidden">
+        {/* Scrollable event list */}
+        <div className="flex-1 md:min-h-0 md:overflow-y-auto scrollbar-hide flex flex-col">
           {filteredEvents.length === 0 ? (
-            <p className="text-body-md text-on-surface-variant text-center py-lg">
-              No events match this filter.
-            </p>
+            <p className="text-sm text-on-surface-variant/50 py-lg">No events match this filter.</p>
           ) : (
-            <>
-              <div className="absolute left-[43px] top-lg bottom-lg w-px bg-outline-variant z-0" />
-              <div className="flex flex-col gap-md relative z-10">
-                {filteredEvents.map((event, i) => {
-                  const key = eventKey(event, i);
-                  const isSelected = event === selectedEvent;
-                  const delay = (i + 1) * 100;
-                  const delayClass = delay <= 500 ? `delay-${delay}` : "delay-500";
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setSelectedKey(key)}
-                      className={`flex gap-md group text-left animate-fade-in-up ${delayClass} cursor-pointer rounded-md transition-colors ${
-                        isSelected ? "bg-surface-container-high/70" : "hover:bg-surface-container-high/30"
-                      }`}
-                    >
-                      <div className="w-[60px] flex-shrink-0 text-right pt-1 pl-md">
-                        <span
-                          className={`text-code-sm group-hover:text-on-surface transition-colors ${
-                            event.isHighlighted ? "text-primary" : "text-on-surface-variant"
-                          }`}
-                          style={
-                            event.isHighlighted
-                              ? { textShadow: "0 0 10px rgba(0, 82, 255, 0.5)" }
-                              : undefined
-                          }
-                        >
-                          {event.time}
-                        </span>
-                      </div>
-                      <div
-                        className={`flex-shrink-0 w-6 h-6 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center mt-0.5 z-10 ${
-                          event.isHighlighted
-                            ? "shadow-[0_0_10px_rgba(0,82,255,0.5)]"
-                            : ""
-                        }`}
-                      >
-                        <div
-                          className={`${
-                            event.isHighlighted ? "w-2.5 h-2.5" : "w-2 h-2"
-                          } rounded-full ${event.dotColor} group-hover:bg-on-surface transition-colors`}
-                        />
-                      </div>
-                      {event.isHighlighted ? (
-                        <div className="flex-1 bg-surface-container-high rounded-md p-sm pr-md">
-                          <div className="flex items-center gap-sm mb-xs">
-                            <span className="text-label-caps text-primary">
-                              {event.type}
-                            </span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                            {event.status && (
-                              <span className="text-label-caps text-secondary ml-auto">
-                                {event.status}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-body-md text-on-surface">
-                            {event.description}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="flex-1 py-1 pr-md">
-                          <div className="flex items-center gap-sm mb-xs">
-                            <span className="text-label-caps text-on-surface">
-                              {event.type}
-                            </span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                          </div>
-                          <p className="text-body-md text-on-surface-variant">
-                            {event.description}
-                          </p>
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
+            filteredEvents.map((event, i) => {
+              const key = eventKey(event, i);
+              const isSelected = event === selectedEvent;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setSelectedKey(key)}
+                  className={`flex items-baseline gap-sm px-sm py-xs text-left w-full text-sm hover:bg-zinc-800/50 border-l-2 ${
+                    isSelected ? "bg-white/[0.06] border-primary" : "border-transparent"
+                  }`}
+                >
+                  <span className="text-on-surface-variant/50 tabular-nums shrink-0">{event.time}</span>
+                  <span className="text-white truncate flex-1">{event.type}</span>
+                  {event.status && (
+                    <span className={`shrink-0 text-xs ${statusColor(event.status)}`}>[ {event.status} ]</span>
+                  )}
+                </button>
+              );
+            })
           )}
         </div>
       </div>
 
-      {/* Right: Detail View */}
-      <div className="lg:col-span-1 animate-fade-in-up delay-300">
+      {/* Right: Event Detail — 60% */}
+      <div className="flex flex-col md:h-full md:min-h-0 md:w-3/5 md:pl-lg mt-lg md:mt-0">
         {selectedEvent ? (
           <EventDetailPanel event={selectedEvent} />
         ) : (
-          <div className="glass-panel rounded-lg p-lg sticky top-24 text-center text-body-md text-on-surface-variant">
-            No event selected.
-          </div>
+          <p className="text-sm text-on-surface-variant/50 font-mono">No event selected.</p>
         )}
       </div>
     </div>

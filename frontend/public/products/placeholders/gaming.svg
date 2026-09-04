@@ -1,0 +1,10 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#121414"/>
+  <path d="M150 170 h100 a40 40 0 0 1 40 40 v18 a25 25 0 0 1 -45 14 l-9 -14 h-72 l-9 14 a25 25 0 0 1 -45 -14 v-18 a40 40 0 0 1 40 -40 z"
+        fill="none" stroke="#5b6178" stroke-width="6" stroke-linejoin="round"/>
+  <line x1="172" y1="200" x2="172" y2="216" stroke="#5b6178" stroke-width="4" stroke-linecap="round"/>
+  <line x1="164" y1="208" x2="180" y2="208" stroke="#5b6178" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="228" cy="200" r="4" fill="#5b6178"/>
+  <circle cx="244" cy="216" r="4" fill="#5b6178"/>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="3" fill="#8d90a2">GAMING</text>
+</svg>

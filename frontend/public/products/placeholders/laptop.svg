@@ -1,0 +1,8 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#121414"/>
+  <g fill="none" stroke="#5b6178" stroke-width="6" stroke-linejoin="round">
+    <rect x="130" y="120" width="140" height="95" rx="6"/>
+    <path d="M110 235 h180 l15 25 h-210 z"/>
+  </g>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="3" fill="#8d90a2">LAPTOP</text>
+</svg>

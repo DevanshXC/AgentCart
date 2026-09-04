@@ -1,4 +1,6 @@
 import MaterialIcon from "@/components/MaterialIcon";
+import LedgerSurface from "@/components/LedgerSurface";
+import MoneyValue from "@/components/MoneyValue";
 import { getMerchant, getCommercePolicy, getProducts } from "@/lib/api";
 
 export default async function MerchantPage() {
@@ -22,43 +24,33 @@ export default async function MerchantPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-md">
-        <div className="glass-panel rounded-xl p-lg">
-          <span className="text-label-caps text-on-surface-variant">
-            Currency
-          </span>
-          <div className="text-headline-md text-on-surface mt-xs">
-            {merchant.currency}
-          </div>
+      <LedgerSurface className="rounded-lg">
+        <div className="ledger-surface-row px-lg py-md">
+          <span className="text-body-md text-on-surface-variant">Currency</span>
+          <span className="text-body-lg text-on-surface font-medium">{merchant.currency}</span>
         </div>
-        <div className="glass-panel rounded-xl p-lg">
-          <span className="text-label-caps text-on-surface-variant">
-            Catalog size
-          </span>
-          <div className="text-headline-md text-on-surface mt-xs">
-            {products.length} products
-          </div>
+        <div className="ledger-surface-row px-lg py-md">
+          <span className="text-body-md text-on-surface-variant">Catalog size</span>
+          <span className="text-body-lg text-on-surface font-medium">{products.length} products</span>
         </div>
-        <div className="glass-panel rounded-xl p-lg">
-          <span className="text-label-caps text-on-surface-variant">
+        <div className="ledger-surface-row px-lg py-md">
+          <span className="text-body-md text-on-surface-variant flex items-center gap-xs">
+            <MaterialIcon icon="verified_user" size={16} className="text-primary" />
             Max order amount
           </span>
-          <div className="text-headline-md text-on-surface mt-xs">
+          <MoneyValue size="sm" className="text-on-surface">
             {policy.maxPurchaseFormatted}
-          </div>
+          </MoneyValue>
         </div>
-      </div>
+      </LedgerSurface>
 
-      <section className="glass-panel rounded-xl p-lg">
+      <section className="ledger-surface rounded-lg p-lg">
         <h2 className="text-label-caps text-on-surface-variant tracking-widest mb-md">
           Catalog
         </h2>
-        <div className="flex flex-col gap-sm">
+        <div className="flex flex-col">
           {products.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center justify-between py-sm border-b border-outline-variant/50 last:border-0"
-            >
+            <div key={p.id} className="ledger-surface-row py-sm">
               <div className="flex flex-col">
                 <span className="text-body-md text-on-surface">
                   {p.name}
@@ -68,9 +60,9 @@ export default async function MerchantPage() {
                 </span>
               </div>
               <div className="flex items-center gap-md">
-                <span className="text-body-md text-on-surface">
+                <MoneyValue size="sm" className="text-on-surface">
                   {p.priceFormatted}
-                </span>
+                </MoneyValue>
                 <span
                   className={`text-label-caps ${
                     p.inStock ? "text-secondary" : "text-error"

@@ -1,0 +1,9 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#121414"/>
+  <g fill="none" stroke="#5b6178" stroke-width="6">
+    <rect x="115" y="120" width="170" height="108" rx="6"/>
+    <line x1="200" y1="228" x2="200" y2="252" stroke-linecap="round"/>
+    <line x1="165" y1="256" x2="235" y2="256" stroke-linecap="round"/>
+  </g>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="3" fill="#8d90a2">MONITOR</text>
+</svg>

@@ -11,8 +11,8 @@ interface ProductImageProps {
 }
 
 /**
- * Renders a product photo that fills its container while preserving aspect
- * ratio, or the standard laptop placeholder when there's no usable image.
+ * Renders a product photo that fills its container edge-to-edge (cropping
+ * as needed), or the standard laptop placeholder when there's no usable image.
  *
  * Sizing note: a plain `<img className="w-full ...">` inside a `flex`
  * container can collapse to a tiny rendered size — percentage widths on a
@@ -53,7 +53,7 @@ export default function ProductImage({ src, alt, className = "", children }: Pro
           src={src}
           alt={alt}
           onError={() => setFailed(true)}
-          className="absolute inset-0 w-full h-full object-contain p-md transition-transform duration-500 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       )}
       {children}

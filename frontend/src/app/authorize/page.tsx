@@ -4,19 +4,18 @@ import Breadcrumb from "@/components/Breadcrumb";
 import SafetyCheck from "@/components/SafetyCheck";
 import OrderSummary from "@/components/OrderSummary";
 import MaterialIcon from "@/components/MaterialIcon";
-import { validatePurchase, getAuthorizeData, calculateQuote } from "@/lib/api";
+import AuthorizeCta from "@/components/AuthorizeCta";
+import { validatePurchase, calculateQuote } from "@/lib/api";
 
 export default async function AuthorizePage() {
   const safetyChecks = await validatePurchase({});
-  const { agentActionsPerformed, agentActionsRestricted } = await getAuthorizeData();
   const pricing = await calculateQuote([]);
 
   return (
     <>
-
-      <main className="flex-grow max-w-4xl mx-auto w-full px-md md:px-xl pt-lg pb-xl flex flex-col gap-lg">
+      <main className="flex-grow max-w-3xl mx-auto w-full px-lg pt-md pb-lg flex flex-col gap-md">
         {/* Breadcrumb & Header */}
-        <div className="flex flex-col gap-sm">
+        <div className="flex flex-col gap-xs mb-md">
           <Breadcrumb
             items={[
               { label: "AI Buyer", href: "/buyer" },
@@ -24,139 +23,57 @@ export default async function AuthorizePage() {
               { label: "Authorization" },
             ]}
           />
-          <div className="mt-sm">
+          <div className="mt-xs">
             <h1 className="text-headline-lg text-on-background">
               Ready to purchase?
             </h1>
-            <p className="text-body-lg text-on-surface-variant mt-xs max-w-2xl">
+            <p className="text-body-md text-on-surface-variant mt-xs max-w-2xl">
               Your agent prepared this purchase. Review the transaction and
               authorize the financial action.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-lg items-start">
-          {/* Left: Order Details & Checks */}
-          <div className="md:col-span-7 flex flex-col gap-lg">
-            {/* Order Summary */}
-            <section className="glass-panel rounded-lg p-lg">
-              <h2 className="text-label-caps text-outline mb-md tracking-wider">
-                Order Summary
-              </h2>
-              <OrderSummary />
-            </section>
-
-            {/* Transaction Safety */}
-            <section className="glass-panel rounded-lg p-lg">
-              <h2 className="text-label-caps text-outline mb-md tracking-wider">
-                Transaction Safety Checks
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
-                {safetyChecks.map((check) => (
-                  <SafetyCheck
-                    key={check.label}
-                    label={check.label}
-                    detail={check.detail}
-                  />
-                ))}
-              </div>
-            </section>
+        {/* The Receipt — one continuous ledger: line items, totals, safety
+            checks, and the authorize action. Nothing else on this screen. */}
+        <section className="bg-[var(--color-void)] border border-border-base rounded-md">
+          <div className="px-lg pt-md pb-sm">
+            <h2 className="text-label-caps text-on-surface-variant tracking-widest mb-xs">
+              Order Summary
+            </h2>
+            <OrderSummary />
           </div>
 
-          {/* Right: Agent Autonomy & Action Panel */}
-          <div className="md:col-span-5 flex flex-col gap-lg">
-            {/* Bounded Autonomy */}
-            <section className="glass-panel rounded-lg p-lg">
-              <div className="flex items-center gap-sm mb-md">
-                <MaterialIcon icon="robot_2" className="text-primary" />
-                <h2 className="text-label-caps text-on-background tracking-wider">
-                  Agent Autonomy Status
-                </h2>
-              </div>
-              <div className="flex flex-col gap-md">
-                <div className="flex flex-col gap-sm">
-                  <span className="text-code-sm text-outline">
-                    ACTIONS PERFORMED
-                  </span>
-                  <ul className="flex flex-col gap-xs">
-                    {agentActionsPerformed.map((action: string) => (
-                      <li
-                        key={action}
-                        className="flex items-center gap-xs text-body-md text-on-surface-variant"
-                      >
-                        <MaterialIcon
-                          icon="check"
-                          className="text-secondary"
-                          size={16}
-                        />
-                        {action}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="flex flex-col gap-sm pt-sm">
-                  <span className="text-code-sm text-outline">
-                    REQUIRES AUTHORIZATION
-                  </span>
-                  <ul className="flex flex-col gap-xs">
-                    {agentActionsRestricted.map((action: string) => (
-                      <li
-                        key={action}
-                        className="flex items-center gap-xs text-body-md text-on-surface-variant"
-                      >
-                        <MaterialIcon
-                          icon="close"
-                          className="text-error"
-                          size={16}
-                        />
-                        {action}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            {/* Authorization Action Panel */}
-            <section className="popover-panel rounded-lg p-lg flex flex-col gap-md relative overflow-hidden">
-              <div className="absolute inset-0 bg-primary-container opacity-[0.02] pointer-events-none" />
-              <div className="flex items-start gap-sm mb-sm z-10">
-                <MaterialIcon icon="warning" className="text-tertiary" />
-                <p className="text-body-md text-on-background">
-                  Your approval is required. The agent has prepared this purchase
-                  but cannot initiate the final financial action until you
-                  authorize it.
-                </p>
-              </div>
-              <div className="flex flex-col items-center justify-center py-md bg-surface rounded-lg z-10">
-                <span className="text-label-caps text-outline mb-xs tracking-wider">
-                  Purchase Amount
-                </span>
-                <span className="text-headline-lg text-on-background">
-                  {pricing.finalTotalFormatted}
-                </span>
-              </div>
-              <div className="flex flex-col gap-sm mt-sm z-10">
-                <Link
-                  href="/payment"
-                  className="w-full btn-primary py-sm px-md rounded-lg text-body-lg font-medium text-center hover:brightness-110 transition-all focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background"
-                >
-                  Authorize {pricing.finalTotalFormatted}
-                </Link>
-                <Link
-                  href="/products/lenovo-loq-15"
-                  className="w-full btn-secondary py-sm px-md rounded-lg text-body-lg text-center hover:bg-surface-container-high transition-colors focus:outline-none focus:ring-2 focus:ring-outline focus:ring-offset-2 focus:ring-offset-background"
-                >
-                  Review Order
-                </Link>
-              </div>
-            </section>
+          <div className="border-t border-white/10 px-lg py-sm">
+            <h2 className="text-label-caps text-on-surface-variant tracking-widest mb-sm">
+              Transaction Safety Checks
+            </h2>
+            <div className="grid grid-cols-2 gap-x-lg gap-y-sm">
+              {safetyChecks.map((check, idx) => (
+                <SafetyCheck
+                  key={check.label}
+                  label={check.label}
+                  detail={check.detail}
+                  index={idx}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+
+          <div className="border-t border-white/10 px-lg py-md flex flex-col gap-xs">
+            <AuthorizeCta href="/payment" label={`Authorize ${pricing.finalTotalFormatted}`} />
+            <Link
+              href="/products/lenovo-loq-15"
+              className="text-center text-sm text-on-surface-variant hover:text-white transition-colors duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] py-xs"
+            >
+              Review Order
+            </Link>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-background/80 backdrop-blur-md py-lg mt-lg">
+      <footer className="w-full bg-background/80 backdrop-blur-md py-sm mt-md">
         <div className="max-w-[1280px] mx-auto px-lg text-center">
           <p className="text-code-sm text-outline flex items-center justify-center gap-xs">
             <MaterialIcon icon="lock" size={16} />

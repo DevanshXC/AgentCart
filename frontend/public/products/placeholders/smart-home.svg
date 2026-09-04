@@ -1,0 +1,8 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#121414"/>
+  <path d="M150 215 v45 h100 v-45 M133 218 L200 168 L267 218"
+        fill="none" stroke="#5b6178" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M182 132 a48 48 0 0 1 36 0" fill="none" stroke="#5b6178" stroke-width="5" stroke-linecap="round"/>
+  <path d="M172 112 a75 75 0 0 1 56 0" fill="none" stroke="#5b6178" stroke-width="5" stroke-linecap="round"/>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="2" fill="#8d90a2">SMART HOME</text>
+</svg>

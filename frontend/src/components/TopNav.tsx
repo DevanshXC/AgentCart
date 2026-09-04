@@ -15,12 +15,7 @@ export default async function TopNav() {
         </Link>
       </div>
 
-      <div className="hidden md:flex items-center gap-xs px-md py-sm rounded-full">
-        <span className="w-2 h-2 rounded-full bg-secondary" />
-        <span className="text-label-caps text-on-surface-variant">
-          AI Agent Ready
-        </span>
-      </div>
+      <div className="hidden md:block" />
 
       <div className="flex items-center gap-md">
         <SearchBox />

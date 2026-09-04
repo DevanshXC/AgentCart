@@ -1,4 +1,6 @@
 import MaterialIcon from "@/components/MaterialIcon";
+import LedgerSurface from "@/components/LedgerSurface";
+import MoneyValue from "@/components/MoneyValue";
 import { getCommercePolicy, getMerchant } from "@/lib/api";
 
 export default async function SettingsPage() {
@@ -6,10 +8,10 @@ export default async function SettingsPage() {
   const merchant = await getMerchant().catch(() => null);
 
   const limits = [
-    { label: "Maximum purchase", value: policy.maxPurchaseFormatted, icon: "payments" },
-    { label: "Approval required above", value: policy.approvalAboveFormatted, icon: "verified_user" },
-    { label: "Maximum discount", value: `${policy.maxDiscountPercent}%`, icon: "percent" },
-    { label: "Remaining budget", value: policy.remainingBudgetFormatted, icon: "account_balance_wallet" },
+    { label: "Maximum purchase", value: policy.maxPurchaseFormatted, icon: "payments", money: true },
+    { label: "Approval required above", value: policy.approvalAboveFormatted, icon: "verified_user", money: true },
+    { label: "Maximum discount", value: `${policy.maxDiscountPercent}%`, icon: "percent", money: false },
+    { label: "Remaining budget", value: policy.remainingBudgetFormatted, icon: "account_balance_wallet", money: true },
   ];
 
   return (
@@ -22,43 +24,42 @@ export default async function SettingsPage() {
         </p>
       </div>
 
-      <section className="glass-panel rounded-xl p-lg">
-        <h2 className="text-label-caps text-on-surface-variant tracking-widest mb-md">
+      <section className="flex flex-col gap-md">
+        <h2 className="text-label-caps text-on-surface-variant tracking-widest">
           Agent Financial Limits
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
+        <LedgerSurface className="rounded-lg">
           {limits.map((l) => (
-            <div
-              key={l.label}
-              className="flex items-center justify-between p-md rounded-lg bg-surface-container border border-outline-variant"
-            >
+            <div key={l.label} className="ledger-surface-row px-lg py-md">
               <div className="flex items-center gap-sm">
-                <MaterialIcon icon={l.icon} className="text-primary" size={20} />
+                <MaterialIcon icon={l.icon} className="text-primary" size={18} />
                 <span className="text-body-md text-on-surface-variant">
                   {l.label}
                 </span>
               </div>
-              <span className="text-body-lg font-semibold text-on-surface">
-                {l.value}
-              </span>
+              {l.money ? (
+                <MoneyValue size="sm" className="text-on-surface">{l.value}</MoneyValue>
+              ) : (
+                <span className="text-body-lg font-semibold text-on-surface">{l.value}</span>
+              )}
             </div>
           ))}
-        </div>
+        </LedgerSurface>
       </section>
 
       {merchant && (
-        <section className="glass-panel rounded-xl p-lg">
-          <h2 className="text-label-caps text-on-surface-variant tracking-widest mb-md">
+        <section className="flex flex-col gap-md">
+          <h2 className="text-label-caps text-on-surface-variant/70 tracking-widest">
             Merchant
           </h2>
-          <div className="flex flex-col gap-xs text-body-md text-on-surface-variant">
+          <div className="flex flex-col gap-xs text-body-md text-on-surface-variant px-sm">
             <div className="flex justify-between">
               <span>Name</span>
-              <span className="text-on-surface">{merchant.name}</span>
+              <span className="text-on-surface-variant">{merchant.name}</span>
             </div>
             <div className="flex justify-between">
               <span>Currency</span>
-              <span className="text-on-surface">{merchant.currency}</span>
+              <span className="text-on-surface-variant">{merchant.currency}</span>
             </div>
           </div>
         </section>

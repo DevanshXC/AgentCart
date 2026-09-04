@@ -33,8 +33,13 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container-low flex flex-col z-50">
       <div className="px-lg py-md h-16 flex items-center gap-sm">
-        <Link href="/buyer" className="text-headline-md font-bold text-on-surface tracking-tight">
-          AgentCart
+        <Link href="/buyer" className="flex items-center gap-sm">
+          <span className="w-7 h-7 rounded-md bg-primary-container/15 border border-primary-container/30 flex items-center justify-center shrink-0">
+            <MaterialIcon icon="receipt_long" size={16} className="text-primary" />
+          </span>
+          <span className="text-headline-md font-bold text-on-surface tracking-tight">
+            AgentCart
+          </span>
         </Link>
         <span className="text-label-caps text-on-surface-variant/50 ml-auto">AI</span>
       </div>

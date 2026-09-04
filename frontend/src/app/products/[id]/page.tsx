@@ -32,188 +32,108 @@ export default async function ProductPage({
   const { matchReasons, requirementMatching } = await getProductPageData();
 
   return (
-    <>
-
-      <main className="flex-grow pt-lg pb-xl px-md md:px-xl max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-lg lg:items-start">
-        {/* Left: Product Image & AI Explanation */}
-        <div className="lg:col-span-7 flex flex-col gap-lg">
-          {/* Product Image Hero */}
+    <main className="flex-grow px-md md:px-lg w-full flex flex-col md:h-[calc(100vh-8rem)] md:overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col md:grid md:grid-cols-2 md:gap-xl md:h-full py-md md:py-lg">
+        {/* Left column — visuals only. Pure product, no card, no border. */}
+        <div className="flex flex-col items-center justify-center md:h-full md:min-h-0 py-md md:py-0">
           <ProductImage
             src={product.image}
             alt={product.name}
-            className="glass-panel rounded-xl group min-h-[320px]"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50 pointer-events-none" />
-            <div className="absolute top-md left-md z-20 flex items-center gap-xs bg-surface-container/80 backdrop-blur-md border border-outline-variant rounded-full px-3 py-1">
-              <MaterialIcon
-                icon="check_circle"
-                fill
-                className="text-secondary"
-                size={16}
-              />
-              <span className="text-label-caps text-on-surface">
-                Agent Verified
-              </span>
-            </div>
-          </ProductImage>
-
-          {/* AI Explanation Panel */}
-          <div className="glass-panel rounded-xl p-lg">
-            <div className="flex items-center gap-sm mb-md">
-              <MaterialIcon icon="auto_awesome" className="text-primary" />
-              <h3 className="text-headline-md text-on-background">
-                Why your agent chose this
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-              {matchReasons.map((reason: string) => (
-                <div key={reason} className="flex items-start gap-sm">
-                  <MaterialIcon icon="check" className="text-secondary" size={20} />
-                  <span className="text-body-md text-on-surface-variant">
-                    {reason.replace("(₹70k)", "(₹70,000)").replace("for Coding", "for coding").replace("for Gaming", "for gaming").replace("Fast SSD", "SSD").replace("Currently in stock", "Currently in stock")}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+            className="w-full h-64 md:h-full md:max-h-[70vh] group"
+          />
         </div>
 
-        {/* Right: Details & Actions */}
-        <div className="lg:col-span-5 flex flex-col gap-lg">
-          {/* Product Identity & Price */}
-          <div className="glass-panel rounded-xl p-lg flex flex-col">
-            <div className="flex justify-between items-start mb-sm">
-              <span className="text-label-caps text-primary tracking-widest">
-                AI Recommendation
-              </span>
-              {matchPercent !== undefined && (
-                <div className="flex items-center gap-xs bg-secondary/10 text-secondary px-2 py-1 rounded-sm border border-secondary/20">
-                  <span className="text-label-caps font-bold">
-                    {matchPercent}% MATCH
-                  </span>
-                </div>
-              )}
-            </div>
-            <h1 className="text-headline-lg text-on-background mb-sm">
-              {product.name}
-            </h1>
-            <div className="text-display text-on-background mb-md">
-              {product.priceFormatted}
-            </div>
-            <p className="text-body-lg text-on-surface-variant mb-lg">
-              {product.specs}
-            </p>
-            <div className="flex items-center gap-md mb-xl">
-              <div className="flex items-center gap-xs">
-                <div className="w-2 h-2 rounded-full bg-secondary" />
-                <span className="text-body-md text-on-surface">In Stock</span>
+        {/* Right column — data & action */}
+        <div className="flex flex-col md:h-full md:min-h-0 relative md:pl-xl md:border-l md:border-white/5">
+          <div className="flex-1 md:min-h-0 md:overflow-y-auto flex flex-col gap-lg pr-xs">
+            {/* Identity */}
+            <div>
+              <div className="flex items-center gap-md mb-sm">
+                <span className="flex items-center gap-xs text-label-caps text-primary tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  Agent Verified
+                </span>
+                {matchPercent !== undefined && (
+                  <span className="text-label-caps text-on-surface-variant">{matchPercent}% match</span>
+                )}
               </div>
-              <span className="text-outline-variant">|</span>
-              <span className="text-body-md text-on-surface-variant">
-                Delivery in {product.delivery}
-              </span>
+              <h1 className="text-4xl font-light text-on-background mb-sm">{product.name}</h1>
+              <div className="font-mono text-3xl tabular-nums text-white mb-sm">{product.priceFormatted}</div>
+              <p className="text-body-md text-on-surface-variant">{product.specs}</p>
             </div>
-            <div className="flex flex-col gap-md mt-auto">
-              <Link
-                href="/authorize"
-                className="btn-primary w-full py-3 rounded-lg text-body-md font-semibold flex items-center justify-center gap-sm"
-              >
-                <MaterialIcon icon="shopping_cart" />
-                Add to purchase
-              </Link>
+
+            {/* Why your agent chose this — annotation, not a card */}
+            <div className="border-l border-primary-container/50 pl-md py-xs">
+              <h4 className="text-label-caps text-primary tracking-widest mb-sm">Why your agent chose this</h4>
+              <div className="flex flex-col gap-xs">
+                {matchReasons.map((reason: string) => (
+                  <div key={reason} className="flex items-start gap-xs text-body-md text-on-surface-variant">
+                    <MaterialIcon icon="check" className="text-primary shrink-0 mt-0.5" size={14} />
+                    <span>
+                      {reason
+                        .replace("(₹70k)", "(₹70,000)")
+                        .replace("for Coding", "for coding")
+                        .replace("for Gaming", "for gaming")
+                        .replace("Fast SSD", "SSD")}
+                    </span>
+                  </div>
+                ))}
+              </div>
               <CompareAlternatives
                 products={allProducts}
                 triggerText="Compare alternatives"
-                triggerClassName="btn-secondary w-full py-3 rounded-lg text-body-md font-semibold flex items-center justify-center gap-sm hover:bg-surface-container-high transition-colors flex"
+                triggerClassName="mt-md text-sm text-on-surface-variant hover:text-white transition-colors duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] underline underline-offset-4 decoration-white/20"
               />
             </div>
-          </div>
 
-          {/* Requirement Matching */}
-          <div className="glass-panel rounded-xl p-lg">
-            <h4 className="text-label-caps text-on-surface-variant tracking-widest mb-md">
-              Requirement Matching
-            </h4>
-            <div className="flex flex-col gap-md">
-              {requirementMatching.map((req: { label: string; value: string; valueColor: string; icon?: string }) => (
-                <div
-                  key={req.label}
-                  className="flex justify-between items-center"
-                >
-                  <span className="text-body-md text-on-surface">
-                    {req.label}
-                  </span>
-                  <div className={`flex items-center gap-xs ${req.valueColor}`}>
-                    <span className="text-body-md">{req.value}</span>
-                    {req.icon && (
-                      <MaterialIcon icon={req.icon} size={16} />
-                    )}
+            {/* Requirement Matching — data matrix */}
+            <div>
+              <h4 className="text-label-caps text-on-surface-variant tracking-widest mb-sm">
+                Requirement Matching
+              </h4>
+              <div className="flex flex-col divide-y divide-white/5 font-mono text-sm">
+                {requirementMatching.map((req: { label: string; value: string; valueColor: string }) => (
+                  <div key={req.label} className="flex justify-between items-center py-xs">
+                    <span className="text-on-surface-variant">{req.label}</span>
+                    <span className={`text-right tabular-nums ${req.valueColor}`}>{req.value}</span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            {/* Financial guardrails — compact ledger strip */}
+            <div className="flex flex-col gap-xs font-mono text-xs pt-sm border-t border-white/5">
+              <div className="flex justify-between">
+                <span className="text-on-surface-variant/40">MAX_PURCHASE</span>
+                <span className="text-on-surface-variant/70 tabular-nums">{policy.maxPurchaseFormatted}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-on-surface-variant/40">REMAINING_BUDGET</span>
+                <span className="text-secondary/80 tabular-nums">{policy.remainingBudgetFormatted}</span>
+              </div>
+            </div>
+
+            {/* Complete your setup */}
+            <div>
+              <h4 className="text-label-caps text-on-surface-variant tracking-widest mb-sm">
+                Complete your setup
+              </h4>
+              <AccessoriesPanel accessories={accessories} />
             </div>
           </div>
 
-          {/* Complete Your Setup */}
-          <div className="glass-panel rounded-xl p-lg">
-            <h4 className="text-label-caps text-on-surface-variant tracking-widest mb-md">
-              Complete your setup
-            </h4>
-            <AccessoriesPanel accessories={accessories} />
+          {/* Pinned CTA — never scrolls out of view */}
+          <div className="shrink-0 md:sticky md:bottom-0 bg-[var(--color-background)] pt-md">
+            <Link
+              href="/authorize"
+              className="w-full h-12 flex items-center justify-center gap-sm rounded-md bg-primary-container text-white font-medium active:scale-[0.98] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background"
+            >
+              <MaterialIcon icon="shopping_cart" size={18} />
+              Add to purchase
+            </Link>
           </div>
-        </div>
-      </main>
-
-      {/* Agent Limits Footer */}
-      <div className="w-full bg-surface-container-lowest py-md px-lg relative z-40 mt-auto">
-        <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-center justify-between gap-md">
-          <div className="flex flex-col gap-xs flex-grow">
-            <div className="flex items-center gap-sm text-primary mb-1">
-              <MaterialIcon icon="security" size={18} />
-              <span className="text-label-caps tracking-widest font-bold">
-                Agent Financial Limits
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-x-lg gap-y-sm text-body-md text-on-surface-variant">
-              <div>
-                Maximum purchase:{" "}
-                <span className="text-on-surface font-medium">
-                  {policy.maxPurchaseFormatted}
-                </span>
-              </div>
-              <div>
-                Current product:{" "}
-                <span className="text-on-surface font-medium">
-                  {product.priceFormatted}
-                </span>
-              </div>
-              <div>
-                Remaining budget:{" "}
-                <span className="text-secondary font-medium">
-                  {policy.remainingBudgetFormatted}
-                </span>
-              </div>
-              <div className="hidden lg:block">
-                Approval above:{" "}
-                <span className="text-on-surface font-medium">
-                  {policy.approvalAboveFormatted}
-                </span>
-              </div>
-            </div>
-            <p className="text-code-sm text-outline mt-1">
-              Your agent can prepare this purchase, but the final financial
-              action remains under your control.
-            </p>
-          </div>
-          <Link
-            href="/authorize"
-            className="btn-primary py-2 px-6 rounded-lg text-body-md font-semibold whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-sm"
-          >
-            Continue to purchase
-            <MaterialIcon icon="arrow_forward" size={18} />
-          </Link>
         </div>
       </div>
-    </>
+    </main>
   );
 }

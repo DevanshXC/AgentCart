@@ -1,0 +1,9 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#121414"/>
+  <g fill="none" stroke="#5b6178" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M140 155 L200 122 L260 155 L260 218 L200 251 L140 218 Z"/>
+    <path d="M140 155 L200 188 L260 155"/>
+    <line x1="200" y1="188" x2="200" y2="251"/>
+  </g>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="2" fill="#8d90a2">ACCESSORY</text>
+</svg>
