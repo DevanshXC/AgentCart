@@ -210,7 +210,7 @@ def setup_database():
             id="test-phone-gaming-and-battery", merchant_id=MERCHANT_ID, sku="PHN-TEST-K", name="Test Phone Gaming And Battery",
             description="Gaming smartphone with a large battery for long sessions.", category="smartphone",
             price=35000, currency="INR", inventory=10, active=True,
-            attributes={"gpu": "gaming GPU", "battery": "7000mAh long-lasting battery life"},
+            attributes={"gpu": "Adreno 750 gaming GPU", "battery": "7000mAh long-lasting battery life"},
         ),
     ]
     db.add_all(requirement_ranking_products)
