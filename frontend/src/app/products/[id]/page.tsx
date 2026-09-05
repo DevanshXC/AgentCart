@@ -125,7 +125,7 @@ export default async function ProductPage({
           {/* Pinned CTA — never scrolls out of view */}
           <div className="shrink-0 md:sticky md:bottom-0 bg-[var(--color-background)] pt-md">
             <Link
-              href="/authorize"
+              href={`/authorize?productId=${product.id}`}
               className="w-full h-12 flex items-center justify-center gap-sm rounded-md bg-primary-container text-white font-medium active:scale-[0.98] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background"
             >
               <MaterialIcon icon="shopping_cart" size={18} />

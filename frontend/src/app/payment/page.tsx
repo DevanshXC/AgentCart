@@ -29,13 +29,16 @@ export default function PaymentPage() {
       if (initStarted.current) return;
       initStarted.current = true;
 
-      const product = await getProduct("lenovo-loq-15");
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get("productId") || "lenovo-loq-15";
+
+      const product = await getProduct(productId);
       const accessories = await getAccessories();
       const accessory = accessories[0];
       
       // Call authorize (createOrder wraps preview + authorize)
-      const order = await createOrder({});
-      const pricing = order.quote;
+      const order = await createOrder({ items: [{ product_id: productId, quantity: 1 }] });
+      const pricing = order.quote || {};
       const timelinePending = await getPaymentTimeline(order.id, false);
       const timelineComplete = await getPaymentTimeline(order.id, true);
       

@@ -4,10 +4,14 @@ import { order as mockOrder, pricing as mockPricing } from "@/lib/mock-data";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 export async function calculateQuote(items: { product_id: string, quantity: number }[]): Promise<Quote> {
+  if (!items || items.length === 0) {
+    throw new Error("No items provided for calculateQuote");
+  }
+
   // Use backend for authoritative preview
   const payload = {
     session_id: "test_session_1", // Hardcoded for demo
-    items: items.length > 0 ? items : [{ product_id: "lenovo-loq-15", quantity: 1 }]
+    items: items
   };
   
   try {
@@ -35,6 +39,10 @@ export async function calculateQuote(items: { product_id: string, quantity: numb
 }
 
 export async function createOrder(payload: { session_id?: string, items?: { product_id: string, quantity: number }[] }): Promise<Order> {
+  if (!payload.items || payload.items.length === 0) {
+    throw new Error("No items provided for createOrder");
+  }
+
   // Wait, the Phase 4 authorization endpoint is /api/orders/{id}/authorize. 
   // We need the order ID from preview. Since it's a demo, we can just fetch it again to authorize.
   try {
@@ -43,7 +51,7 @@ export async function createOrder(payload: { session_id?: string, items?: { prod
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         session_id: payload.session_id || "test_session_1", 
-        items: payload.items && payload.items.length > 0 ? payload.items : [{ product_id: "lenovo-loq-15", quantity: 1 }] 
+        items: payload.items
       }),
       cache: "no-store"
     });

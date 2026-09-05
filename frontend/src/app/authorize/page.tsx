@@ -7,9 +7,14 @@ import MaterialIcon from "@/components/MaterialIcon";
 import AuthorizeCta from "@/components/AuthorizeCta";
 import { validatePurchase, calculateQuote } from "@/lib/api";
 
-export default async function AuthorizePage() {
+export default async function AuthorizePage(
+  props: { searchParams: Promise<{ productId?: string }> }
+) {
+  const searchParams = await props.searchParams;
+  const productId = searchParams.productId || "lenovo-loq-15"; // fallback for now if undefined
+
   const safetyChecks = await validatePurchase({});
-  const pricing = await calculateQuote([]);
+  const pricing = await calculateQuote([{ product_id: productId, quantity: 1 }]);
 
   return (
     <>
@@ -19,7 +24,7 @@ export default async function AuthorizePage() {
           <Breadcrumb
             items={[
               { label: "AI Buyer", href: "/buyer" },
-              { label: "Recommendation", href: "/products/lenovo-loq-15" },
+              { label: "Recommendation", href: `/products/${productId}` },
               { label: "Authorization" },
             ]}
           />
@@ -41,7 +46,7 @@ export default async function AuthorizePage() {
             <h2 className="text-label-caps text-on-surface-variant tracking-widest mb-xs">
               Order Summary
             </h2>
-            <OrderSummary />
+            <OrderSummary productId={productId} />
           </div>
 
           <div className="border-t border-white/10 px-lg py-sm">
@@ -61,9 +66,9 @@ export default async function AuthorizePage() {
           </div>
 
           <div className="border-t border-white/10 px-lg py-md flex flex-col gap-xs">
-            <AuthorizeCta href="/payment" label={`Authorize ${pricing.finalTotalFormatted}`} />
+            <AuthorizeCta href={`/payment?productId=${productId}`} label={`Authorize ${pricing.finalTotalFormatted}`} />
             <Link
-              href="/products/lenovo-loq-15"
+              href={`/products/${productId}`}
               className="text-center text-sm text-on-surface-variant hover:text-white transition-colors duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] py-xs"
             >
               Review Order

@@ -59,36 +59,17 @@ function getCategoryIcon(name: string): string {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/products`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    const data = await res.json();
-    return data.map(mapBackendProduct);
-  } catch (e) {
-    console.warn("Failed to fetch products from backend, falling back to mock data:", e);
-    const { product: mockProduct, alternatives } = await import("@/lib/mock-data");
-    return [
-      { ...mockProduct, id: "lenovo-loq-15" } as unknown as Product,
-      { ...alternatives[0], id: "ideapad-slim-5", image: "", heroImage: "", inStock: true, delivery: "2-4 days", ram: "16GB", ssd: "512GB", gpu: "Integrated", specs: alternatives[0].description } as unknown as Product,
-      { ...alternatives[1], id: "acer-nitro-v15", image: "", heroImage: "", inStock: true, delivery: "2-4 days", ram: "8GB", ssd: "512GB", gpu: "RTX 4060", specs: alternatives[1].description } as unknown as Product,
-    ];
-  }
+  const res = await fetch(`${API_BASE_URL}/api/products`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const data = await res.json();
+  return data.map(mapBackendProduct);
 }
 
 export async function getProduct(id: string): Promise<Product> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/products/${id}`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    const data = await res.json();
-    return mapBackendProduct(data);
-  } catch (e) {
-    console.warn(`Failed to fetch product ${id} from backend, falling back to mock data:`, e);
-    const { product: mockProduct } = await import("@/lib/mock-data");
-    if (id === "lenovo-loq-15") {
-      return { ...mockProduct, id } as Product;
-    }
-    throw new Error("Product not found");
-  }
+  const res = await fetch(`${API_BASE_URL}/api/products/${id}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const data = await res.json();
+  return mapBackendProduct(data);
 }
 
 export async function searchProducts(query: string, filters?: { category?: string; min_price?: number; max_price?: number; in_stock?: boolean }): Promise<Product[]> {

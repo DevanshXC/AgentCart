@@ -4,16 +4,18 @@ interface OrderSummaryProps {
   showOrderId?: boolean;
   orderId?: string;
   compact?: boolean;
+  productId?: string;
 }
 
 export default async function OrderSummary({
   showOrderId = false,
   orderId,
+  productId = "lenovo-loq-15",
 }: OrderSummaryProps) {
-  const product = await getProduct("lenovo-loq-15");
+  const product = await getProduct(productId);
   const accessories = await getAccessories();
   const accessory = accessories[0];
-  const pricing = await calculateQuote([]);
+  const pricing = await calculateQuote([{ product_id: productId, quantity: 1 }]);
 
   return (
     <div className="flex flex-col">
