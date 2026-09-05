@@ -90,7 +90,7 @@ def _score_camera(haystack: str) -> float:
     """Score camera quality from attribute values.
 
     Components (additive):
-    - megapixel count:  mp / 10  (200MP → 20,  50MP → 5)
+    - megapixel count:  min(10.0, mp / 10)  (Capped at 10 to prevent 200MP from overpowering OIS/Telephoto)
     - OIS:              +5
     - telephoto:        +4
     - optical zoom:     +4  (or +2 for generic 'zoom' mention)
@@ -104,15 +104,16 @@ def _score_camera(haystack: str) -> float:
 
     mp_match = _MP_PATTERN.search(haystack)
     if mp_match:
-        score += int(mp_match.group(1)) / 10.0
+        # Cap MP contribution at 10.0 so massive numbers (like 200MP) don't dominate real features
+        score += min(10.0, int(mp_match.group(1)) / 10.0)
 
     if "ois" in haystack:
         score += 5.0
     if "telephoto" in haystack:
         score += 4.0
-    if "optical zoom" in haystack or "optical" in haystack:
+    if ("optical zoom" in haystack or "optical" in haystack) and "0x optical" not in haystack:
         score += 4.0
-    elif "zoom" in haystack:
+    elif "zoom" in haystack and "0x optical" not in haystack:
         score += 2.0
     if "ultrawide" in haystack:
         score += 2.0

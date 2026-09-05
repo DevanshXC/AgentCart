@@ -188,8 +188,8 @@ class TestCameraScorer:
     def test_200mp_ois_leica_scores_high(self):
         h = "200mp quad ois leica, 5x optical zoom, ultrawide"
         score = _score_camera(h)
-        # 200/10=20 + ois=5 + optical=4 + ultrawide=2 + leica=6 + quad=4 + zoom already counted via optical
-        assert score >= 35.0
+        # 10(cap) + ois=5 + optical=4 + ultrawide=2 + leica=6 + quad=4 = 31
+        assert score == 31.0
 
     def test_50mp_triple_hasselblad_scores_mid(self):
         h = "50mp triple hasselblad"
@@ -206,6 +206,25 @@ class TestCameraScorer:
         h = "n/a"
         score = _score_camera(h)
         assert score == 0.0
+
+    def test_optical_zoom_no_false_bonus_for_0x(self):
+        h = "0x optical zoom"
+        score = _score_camera(h)
+        assert score == 0.0
+
+    def test_optical_zoom_bonus_for_3x(self):
+        h = "3x optical zoom"
+        score = _score_camera(h)
+        assert score >= 4.0
+
+    def test_megapixel_score_is_capped_at_10(self):
+        h200 = "200mp"
+        score200 = _score_camera(h200)
+        h100 = "100mp"
+        score100 = _score_camera(h100)
+        # Both should hit the cap of 10.0
+        assert score200 == 10.0
+        assert score100 == 10.0
 
 
 class TestPerformanceScorer:
