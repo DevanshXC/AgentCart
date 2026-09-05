@@ -22,7 +22,7 @@ MAX_PRODUCTS_TO_LLM = 5
 # the existing ranking (see _rank_by_requirement_relevance below).
 REQUIREMENT_VOCABULARY: dict[str, list[str]] = {
     "camera": [
-        "camera", "megapixel", "mp", "ois", "optical", "leica", "hasselblad",
+        "camera", "cameras", "megapixel", "mp", "ois", "optical", "leica", "hasselblad",
         "computational photography", "photography", "zoom", "lens",
     ],
     "performance": [
@@ -52,7 +52,11 @@ def _detect_requirements(query: str) -> list[str]:
     if not query:
         return []
     q = query.lower()
-    return [req for req, terms in REQUIREMENT_VOCABULARY.items() if any(t in q for t in terms)]
+    return [
+        req
+        for req, terms in REQUIREMENT_VOCABULARY.items()
+        if any(re.search(r"\b" + re.escape(t) + r"\b", q, re.IGNORECASE) for t in terms)
+    ]
 
 
 def _attribute_value_haystack(product: Product) -> str:
@@ -188,13 +192,20 @@ def _lookup_tier(haystack: str, tier_table: dict[str, float]) -> float:
     return best
 
 
-def _parse_ram_gb(haystack: str) -> float:
-    """Extract RAM in GB from attribute text."""
+def _parse_ram_gb(haystack: str, attrs: Optional[dict] = None) -> float:
+    """Extract RAM in GB from attributes or attribute text."""
+    if attrs and "ram" in attrs:
+        match = _RAM_GB_PATTERN.search(str(attrs["ram"]))
+        if match:
+            return float(match.group(1))
+    ram_explicit = re.search(r"(\d+)\s*gb\s*ram", haystack, re.IGNORECASE)
+    if ram_explicit:
+        return float(ram_explicit.group(1))
     match = _RAM_GB_PATTERN.search(haystack)
     if match:
         val = int(match.group(1))
-        # Sanity: RAM values for phones/laptops are typically 2-128GB.
-        if val <= 256:
+        # RAM values for phones/laptops are typically <= 32GB (storage is 64/128/256/512GB)
+        if val <= 32:
             return float(val)
     return 0.0
 
@@ -216,7 +227,7 @@ def _score_performance(haystack: str, attrs: dict) -> float:
 
     proc_score = _lookup_tier(perf_haystack, _PROCESSOR_TIERS)
     gpu_score = _lookup_tier(perf_haystack, _GPU_TIERS) * 0.5
-    ram_score = _parse_ram_gb(perf_haystack)
+    ram_score = _parse_ram_gb(perf_haystack, attrs)
     return proc_score + gpu_score + ram_score
 
 
@@ -379,9 +390,18 @@ def _rank_by_requirement_relevance(products: list[Product], query: Optional[str]
     )
 
 
-def search_products(db: Session, query: str = None, category: str = None, min_price: int = None, max_price: int = None, in_stock: bool = None) -> dict:
+def search_products(
+    db: Session,
+    query: str = None,
+    category: str = None,
+    min_price: int = None,
+    max_price: int = None,
+    in_stock: bool = None,
+    user_message: str = None,
+) -> dict:
     products = catalog_search_products(db, query=query, category=category, min_price=min_price, max_price=max_price, in_stock=in_stock)
-    ranked_products = _rank_by_requirement_relevance(products, query)
+    ranking_query = f"{query or ''} {user_message or ''}".strip() or query
+    ranked_products = _rank_by_requirement_relevance(products, ranking_query)
     top_products = ranked_products[:MAX_PRODUCTS_TO_LLM]
     return {"products": [ProductResponse.model_validate(p).model_dump(mode="json") for p in top_products]}
 

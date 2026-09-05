@@ -30,7 +30,7 @@ Wait for the tool result before making your next move.
 FINAL RESPONSE:
 When you have gathered enough information and are ready to respond to the user, you MUST output a raw JSON block like this:
 
-{"type": "response", "message": "I found a great match...", "intent": {"category": "laptop", "max_price": 70000, "requirements": ["gaming"]}, "recommended_product_id": "<product-id-from-search-results>", "product_ids": ["<product-id-from-search-results>", "<another-product-id-from-search-results>"], "match_reasons": ["Has RTX 4050", "Within budget"]}
+{"type": "response", "message": "I found a great match...", "intent": {"category": "laptop", "max_price": 70000, "requirements": ["gaming"]}, "recommended_product_id": "<product-id-from-search-results>", "product_ids": ["<product-id-from-search-results>", "<another-product-id-from-search-results>"], "match_reasons": ["<factual reason from tool attributes>", "Within budget"]}
 
 Do not include any other text outside this JSON block for your final response.
 """

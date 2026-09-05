@@ -202,6 +202,9 @@ class AgentOrchestrator:
                     # may constrain the search — including forcing it back
                     # to None if the LLM added one the user never stated.
                     tool_args["max_price"] = user_price_ceiling
+                    # Ensure requirement ranking has access to the user's requirements
+                    # even if the LLM stripped them from its search query
+                    tool_args["user_message"] = message
 
                 logger.info(f"TOOL_CALL: {tool_name} with {tool_args}")
 
@@ -255,12 +258,30 @@ class AgentOrchestrator:
                 grounded = rec_id is not None or len(validated_product_ids) > 0
                 response_message = parsed_data.get("message", "Here is what I found.") if grounded else NO_MATCH_MESSAGE
 
+                # Guard against hallucinated match reasons (e.g. LLM copying "Has RTX 4050" for smartphones)
+                raw_reasons = parsed_data.get("match_reasons", []) if grounded else []
+                rec_product_data = next((p for p in fetched_products if p.get("id") == rec_id), None)
+                clean_reasons = []
+                for r in raw_reasons:
+                    if rec_product_data and rec_product_data.get("category") == "smartphone":
+                        if any(gpu_word in r.lower() for gpu_word in ["rtx", "gtx", "geforce", "radeon"]):
+                            continue
+                    clean_reasons.append(r)
+
+                if not clean_reasons and rec_product_data:
+                    attrs = rec_product_data.get("attributes", {})
+                    if "camera" in attrs:
+                        clean_reasons.append(attrs["camera"].split(",")[0].strip())
+                    if "processor" in attrs:
+                        clean_reasons.append(attrs["processor"])
+                    clean_reasons.append("Within budget")
+
                 return AgentChatResponse(
                     message=response_message,
                     intent=intent,
                     recommended_product_id=rec_id,
                     product_ids=validated_product_ids,
-                    match_reasons=parsed_data.get("match_reasons", []) if grounded else [],
+                    match_reasons=clean_reasons,
                     tools_used=tools_used,
                     products=fetched_products
                 )
