@@ -665,20 +665,21 @@ export default function BuyerPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2 pt-1">
+                  <div className="flex items-center gap-2 pt-1 w-full">
                     <Link
                       href={
                         recommendedProduct.matchPercent > 0
                           ? `/products/${recommendedProduct.id}?match=${recommendedProduct.matchPercent}`
                           : `/products/${recommendedProduct.id}`
                       }
-                      className="btn-primary flex-1 py-2 rounded-lg text-xs sm:text-sm font-semibold text-center shadow-md transition-all hover:scale-[1.01]"
+                      className="btn-primary flex-1 h-10 inline-flex items-center justify-center py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold text-center shadow-md transition-all hover:scale-[1.01] leading-none"
                     >
                       View Recommendation
                     </Link>
                     <CompareAlternatives
                       products={response?.products || []}
                       triggerText={`Compare ${response?.products?.length || 0} options`}
+                      triggerClassName="btn-secondary flex-1 h-10 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold text-center hover:bg-surface-container-high transition-all cursor-pointer leading-none"
                     />
                   </div>
                 </div>

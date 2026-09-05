@@ -23,28 +23,27 @@ export default function CompareAlternatives({
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
 
+  const isCustomLink = triggerClassName && !triggerClassName.includes("btn");
+
   const defaultClassName =
     triggerStyle === "primary"
-      ? "btn-primary flex-1 py-sm rounded-lg text-body-md font-medium text-center"
-      : "btn-secondary flex-1 py-sm rounded-lg text-body-md font-medium text-center hover:bg-surface-container-high transition-colors";
+      ? "btn-primary flex-1 h-10 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold text-center shadow-md transition-all hover:scale-[1.01] cursor-pointer"
+      : "btn-secondary flex-1 h-10 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold text-center hover:bg-surface-container-high transition-all cursor-pointer";
 
   return (
     <>
       <button
+        type="button"
         onClick={handleOpen}
         className={triggerClassName || defaultClassName}
       >
-        {triggerStyle === "secondary" && !triggerClassName && (
-          <MaterialIcon icon="compare_arrows" className="inline-block mr-2 text-sm" />
-        )}
-        {triggerClassName?.includes("compare_arrows") || triggerClassName ? null : ""}
-        {triggerClassName && triggerClassName.includes("flex") ? (
-          <>
-            <MaterialIcon icon="compare_arrows" />
-            {triggerText}
-          </>
-        ) : (
+        {isCustomLink ? (
           triggerText
+        ) : (
+          <>
+            <MaterialIcon icon="compare_arrows" size={16} className="shrink-0" />
+            <span>{triggerText}</span>
+          </>
         )}
       </button>
 
