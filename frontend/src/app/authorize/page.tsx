@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { redirect } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumb";
 import SafetyCheck from "@/components/SafetyCheck";
 import OrderSummary from "@/components/OrderSummary";
@@ -11,7 +12,10 @@ export default async function AuthorizePage(
   props: { searchParams: Promise<{ productId?: string }> }
 ) {
   const searchParams = await props.searchParams;
-  const productId = searchParams.productId || "lenovo-loq-15"; // fallback for now if undefined
+  const productId = searchParams.productId;
+  if (!productId) {
+    redirect("/buyer");
+  }
 
   const safetyChecks = await validatePurchase({});
   const pricing = await calculateQuote([{ product_id: productId, quantity: 1 }]);

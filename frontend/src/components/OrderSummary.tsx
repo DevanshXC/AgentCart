@@ -4,13 +4,13 @@ interface OrderSummaryProps {
   showOrderId?: boolean;
   orderId?: string;
   compact?: boolean;
-  productId?: string;
+  productId: string;
 }
 
 export default async function OrderSummary({
   showOrderId = false,
   orderId,
-  productId = "lenovo-loq-15",
+  productId,
 }: OrderSummaryProps) {
   const product = await getProduct(productId);
   const accessories = await getAccessories();

@@ -14,28 +14,33 @@ export async function calculateQuote(items: { product_id: string, quantity: numb
     items: items
   };
   
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/orders/preview`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      cache: "no-store"
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      return {
-        ...mockPricing,
-        itemsTotal: data.amount,
-        finalTotal: data.amount,
-        itemsTotalFormatted: `₹${(data.amount).toLocaleString('en-IN')}`,
-        finalTotalFormatted: `₹${(data.amount).toLocaleString('en-IN')}`
-      };
+  const res = await fetch(`${API_BASE_URL}/api/orders/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    cache: "no-store"
+  });
+  
+  if (!res.ok) {
+    let errMsg = `Quote calculation failed (${res.status})`;
+    try {
+      const errJson = await res.json();
+      if (errJson.detail) errMsg = `Quote calculation failed: ${errJson.detail}`;
+    } catch {
+      const errText = await res.text().catch(() => "");
+      if (errText) errMsg = `Quote calculation failed: ${errText}`;
     }
-  } catch {
-    console.error("Order preview failed");
+    throw new Error(errMsg);
   }
-  return mockPricing;
+
+  const data = await res.json();
+  return {
+    ...mockPricing,
+    itemsTotal: data.amount,
+    finalTotal: data.amount,
+    itemsTotalFormatted: `₹${(data.amount).toLocaleString('en-IN')}`,
+    finalTotalFormatted: `₹${(data.amount).toLocaleString('en-IN')}`
+  };
 }
 
 export async function createOrder(payload: { session_id?: string, items?: { product_id: string, quantity: number }[] }): Promise<Order> {
@@ -43,46 +48,69 @@ export async function createOrder(payload: { session_id?: string, items?: { prod
     throw new Error("No items provided for createOrder");
   }
 
-  // Wait, the Phase 4 authorization endpoint is /api/orders/{id}/authorize. 
-  // We need the order ID from preview. Since it's a demo, we can just fetch it again to authorize.
-  try {
-    const previewRes = await fetch(`${API_BASE_URL}/api/orders/preview`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        session_id: payload.session_id || "test_session_1", 
-        items: payload.items
-      }),
-      cache: "no-store"
-    });
-    const previewData = await previewRes.json();
-    
-    const authRes = await fetch(`${API_BASE_URL}/api/orders/${previewData.id}/authorize`, {
-      method: "POST",
-      cache: "no-store"
-    });
-    const authData = await authRes.json();
-    
-    return {
-      id: authData.id,
-      testOrderId: authData.id,
-      providerRef: authData.provider_order_id || "",
-      status: authData.status || "AUTHORIZED",
-      provider_order_id: authData.provider_order_id,
-      quote: {
-        ...mockPricing,
-        finalTotal: authData.amount,
-        finalTotalFormatted: `₹${(authData.amount).toLocaleString('en-IN')}`
-      }
-    };
-  } catch {
-    console.error("Order auth failed");
+  // 1. Authoritative order preview creation
+  const previewRes = await fetch(`${API_BASE_URL}/api/orders/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      session_id: payload.session_id || "test_session_1", 
+      items: payload.items
+    }),
+    cache: "no-store"
+  });
+  
+  if (!previewRes.ok) {
+    let errMsg = `Order preview failed (${previewRes.status})`;
+    try {
+      const errJson = await previewRes.json();
+      if (errJson.detail) errMsg = `Order preview failed: ${errJson.detail}`;
+    } catch {
+      const errText = await previewRes.text().catch(() => "");
+      if (errText) errMsg = `Order preview failed: ${errText}`;
+    }
+    throw new Error(errMsg);
+  }
+
+  const previewData = await previewRes.json();
+  if (!previewData?.id) {
+    throw new Error("Order preview succeeded but returned no order ID");
+  }
+  
+  // 2. Authoritative order authorization
+  const authRes = await fetch(`${API_BASE_URL}/api/orders/${previewData.id}/authorize`, {
+    method: "POST",
+    cache: "no-store"
+  });
+  
+  if (!authRes.ok) {
+    let errMsg = `Order authorization failed (${authRes.status})`;
+    try {
+      const errJson = await authRes.json();
+      if (errJson.detail) errMsg = `Order authorization failed: ${errJson.detail}`;
+    } catch {
+      const errText = await authRes.text().catch(() => "");
+      if (errText) errMsg = `Order authorization failed: ${errText}`;
+    }
+    throw new Error(errMsg);
+  }
+
+  const authData = await authRes.json();
+  if (!authData?.provider_order_id) {
+    throw new Error("Order was authorized on server, but Razorpay order ID was not returned by gateway");
   }
   
   return {
-    ...mockOrder,
-    status: "CREATED"
-  } as Order;
+    id: authData.id,
+    testOrderId: authData.id,
+    providerRef: authData.provider_order_id || "",
+    status: authData.status || "AUTHORIZED",
+    provider_order_id: authData.provider_order_id,
+    quote: {
+      ...mockPricing,
+      finalTotal: authData.amount,
+      finalTotalFormatted: `₹${(authData.amount).toLocaleString('en-IN')}`
+    }
+  };
 }
 
 export async function getOrder(id: string): Promise<Order> {

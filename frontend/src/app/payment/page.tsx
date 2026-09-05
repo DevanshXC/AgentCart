@@ -102,7 +102,12 @@ export default function PaymentPage() {
       initStarted.current = true;
 
       const params = new URLSearchParams(window.location.search);
-      const productId = params.get("productId") || "P0024";
+      const productId = params.get("productId");
+      if (!productId) {
+        setPaymentStatus("FAILED");
+        setFailureReason("No product specified for payment checkout. Please select a product from the catalog.");
+        return;
+      }
 
       try {
         const product = await getProduct(productId);
@@ -157,7 +162,55 @@ export default function PaymentPage() {
     openRazorpay(data.order, data.pricing);
   };
 
-  if (!data && paymentStatus === "INITIALIZING") {
+  if (!data) {
+    if (paymentStatus === "FAILED") {
+      return (
+        <main className="flex-grow pt-16 pb-24 px-md lg:px-xl max-w-3xl mx-auto w-full flex flex-col items-center justify-center gap-md text-center">
+          <MaterialIcon icon="error" className="text-4xl text-error mb-sm animate-pop-in" />
+          <h1 className="text-headline-lg">Payment Authorization Failed</h1>
+          <p className="text-body-lg text-on-surface-variant max-w-md">
+            {failureReason || "The payment flow could not create or authorize an order with the backend. Please verify backend availability or try again."}
+          </p>
+          <div className="flex gap-md mt-md">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="btn-primary text-body-md px-lg py-md rounded-sm flex items-center gap-sm cursor-pointer"
+            >
+              <MaterialIcon icon="refresh" size={18} />
+              Retry
+            </button>
+            <Link
+              href="/buyer"
+              className="btn-secondary text-body-md px-lg py-md rounded-sm flex items-center gap-sm"
+            >
+              <MaterialIcon icon="arrow_back" size={18} />
+              Return to Catalog
+            </Link>
+          </div>
+        </main>
+      );
+    }
+    if (paymentStatus === "CANCELLED") {
+      return (
+        <main className="flex-grow pt-16 pb-24 px-md lg:px-xl max-w-3xl mx-auto w-full flex flex-col items-center justify-center gap-md text-center">
+          <MaterialIcon icon="cancel" className="text-4xl text-tertiary mb-sm animate-pop-in" />
+          <h1 className="text-headline-lg">Payment Cancelled</h1>
+          <p className="text-body-lg text-on-surface-variant max-w-md">
+            Checkout was closed before completion.
+          </p>
+          <div className="flex gap-md mt-md">
+            <Link
+              href="/buyer"
+              className="btn-secondary text-body-md px-lg py-md rounded-sm flex items-center gap-sm"
+            >
+              <MaterialIcon icon="arrow_back" size={18} />
+              Return to Catalog
+            </Link>
+          </div>
+        </main>
+      );
+    }
     return (
       <main className="flex-grow pt-16 pb-24 px-md lg:px-xl max-w-3xl mx-auto w-full flex flex-col items-center justify-center gap-md">
         <MaterialIcon icon="sync" className="text-4xl text-secondary animate-spin-slow" />
@@ -166,8 +219,6 @@ export default function PaymentPage() {
       </main>
     );
   }
-
-  if (!data) return null;
 
   const { product, accessory, order, pricing, timelinePending, timelineComplete } = data;
   const isComplete = paymentStatus === "COMPLETED";
